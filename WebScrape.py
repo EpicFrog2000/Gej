@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from bs4 import BeautifulSoup
 
+
 class Bot:
     def __init__(self):
         # WebDriver setup to avoid detection
@@ -44,11 +45,24 @@ class Bot:
 
                 # Find the desired element by tag, class, or other attributes
                 tytul_element = soup.find('h3', attrs={'data-test': 'offer-title'})
+                company_name_element = soup.find('span', attrs={'data-test': 'company-name'})
+                offer_location_element = soup.find('span', attrs={'data-test': 'offer-location'})
+                offer_management_level_element = soup.find('span', attrs={'data-test': 'offer-management-level'})
+                date = soup.find('div', class_='JobOfferstyles__FooterText-sc-1rq6ue2-22')
 
+                
                 # Get the text of the element
                 tytul = tytul_element.text if tytul_element else ''
-                
-                print(tytul)
+                company = company_name_element.text if company_name_element else ''
+                location = offer_location_element.text if offer_location_element else ''
+                management_level = offer_management_level_element.text if offer_management_level_element else ''
+                Pdate = date.text if date else ''
+                Pdate = Pdate.replace("opublikowana: ", "")
+                print("Tytuł oferty: " + tytul)
+                print("Firma:" + company)
+                print("Lokalizacja: " + location)
+                print("Doświadczenie: " + management_level)
+                print("Data opublikowania: " + Pdate)
                 print("\n")
             
         except Exception as e:
