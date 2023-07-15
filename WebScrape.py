@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from bs4 import BeautifulSoup
+
 class Bot:
     def __init__(self):
         # WebDriver setup to avoid detection
@@ -36,11 +38,21 @@ class Bot:
                 inner_html = oferta.get_attribute("innerHTML")
                 # TODO podziel na czesci:
                 # tytul, pracodawca, lokalizacja i tam takie detale, data publikacji, technologie, czasem nie dawają wszystkich to ifa sie jebnie
-                print(inner_html)
+                #Get tytul oferty
+                # Parse the HTML content
+                soup = BeautifulSoup(inner_html, 'html.parser')
+
+                # Find the desired element by tag, class, or other attributes
+                tytul_element = soup.find('h3', attrs={'data-test': 'offer-title'})
+
+                # Get the text of the element
+                tytul = tytul_element.text if tytul_element else ''
+                
+                print(tytul)
                 print("\n")
             
         except Exception as e:
             print("Error:", e)
 
 bot = Bot()
-input("ebe")
+input(" ")
