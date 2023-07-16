@@ -70,7 +70,7 @@ class Bot:
             offer_management_level_element = soup.find('span', attrs={'data-test': 'offer-management-level'})
             date = soup.find('div', class_='JobOfferstyles__FooterText-sc-1rq6ue2-22')
 
-            # Get the text of the element
+            # Get the text of the element, checking if it exists
             tytul = tytul_element.text if tytul_element else ''
             company = company_name_element.text if company_name_element else ''
             location = offer_location_element.text if offer_location_element else ''
@@ -78,12 +78,14 @@ class Bot:
             Pdate = date.text if date else ''
             Pdate = Pdate.replace("opublikowana: ", "")
 
-            print("Tytuł oferty: " + tytul)
-            print("Firma:" + company)
-            print("Lokalizacja: " + location)
-            print("Doświadczenie: " + management_level)
-            print("Data opublikowania: " + Pdate)
-            print("\n")
+            # Print the details only if the title is not empty
+            if tytul:
+                print("Tytuł oferty: " + tytul)
+                print("Firma:" + company)
+                print("Lokalizacja: " + location)
+                print("Doświadczenie: " + management_level)
+                print("Data opublikowania: " + Pdate)
+                print("\n")
     
     def GoToNextSite(self):
         self.currentSite+=1
