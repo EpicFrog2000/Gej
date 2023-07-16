@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
 class Bot:
+    
     def __init__(self):
         # WebDriver setup to avoid detection
         options = webdriver.ChromeOptions()
@@ -18,16 +19,18 @@ class Bot:
         self.bot = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         self.bot.get("https://it.pracuj.pl/")
         self.bot.maximize_window()
-        currentSite = 1
-
-    def GetSiteReady(self):
+        self.currentSite = 1
+        
+    def ClickButtonAcc(self):
         # Wait until the "Akceptuj" button is present
         WebDriverWait(self.bot, 100).until(
             EC.presence_of_element_located((By.CLASS_NAME, "size-medium.variant-primary.cookies_b1fqykql"))
         )
         # Find and click the "Akceptuj" button
         button = self.bot.find_element(By.CLASS_NAME, "size-medium.variant-primary.cookies_b1fqykql")
-        button.click()
+        button.click() 
+          
+    def GetSiteReady(self):
         # Wait for the content box and paginator to be present
         WebDriverWait(self.bot, 1000).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "[class^='ContentBoxstyles__Wrapper-']"))
@@ -50,7 +53,8 @@ class Bot:
         # Get the inner HTML content of the <a> element
         numer_stron_sesji = link_element.get_attribute("innerHTML")
         # Print the inner HTML content
-        print("Ilosc stron: " + numer_stron_sesji)
+        #print("Ilosc stron: " + numer_stron_sesji)
+        return numer_stron_sesji
             
     # Pobierz divy z ofertami
     def GetOffersFromCurrentSite(self):
@@ -80,9 +84,19 @@ class Bot:
             print("Doświadczenie: " + management_level)
             print("Data opublikowania: " + Pdate)
             print("\n")
-            
+    
+    def GoToNextSite(self):
+        self.currentSite+=1
+        self.bot.get("https://it.pracuj.pl/?pn=" + str(self.currentSite))
+        self.GetSiteReady()
+        
 bot = Bot()
 bot.GetSiteReady()
-bot.GetAllSitesNums()
-bot.GetOffersFromCurrentSite()
+bot.ClickButtonAcc()
+numer_stron_sesji = bot.GetAllSitesNums()
+
+while int(bot.currentSite) < int(numer_stron_sesji):
+    bot.GetOffersFromCurrentSite()
+    bot.GoToNextSite()
+
 input(" ")
