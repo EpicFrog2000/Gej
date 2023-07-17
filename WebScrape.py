@@ -85,7 +85,23 @@ class Bot:
                 print("Lokalizacja: " + location)
                 print("Doświadczenie: " + management_level)
                 print("Data opublikowania: " + Pdate)
+                
+                #Jeśli na ogłoszeniu są juz napisane technologie to git jak nie to trzeba będzie wejść w ogłoszenie i je wziąć OOF :ccccc
+                    # TODO: wejść w każdą ofertę i wyciągnąć: Mile widziane technologie, doświadczenie, wymagania, specjalizacja costam cośtam
+                    #prawdopodobnie trzeba będzie uzyc AI do czytania i skracania teksów do jednego słowa na kategorie czy coś
+                    
+                if soup.find('div', attrs={'data-test': 'offer-tags'}):
+                    print("Tagi narzędzi pracy: ")
+                    tagi = soup.find('div', attrs={'data-test': 'offer-tags'})
+                    inner_html = str(tagi)
+                    tag_div = BeautifulSoup(inner_html, 'html.parser')
+                    tags = tag_div.find_all(class_="Chipsstyles__Wrapper-sc-17yerqz-0 cShFq JobOfferstyles__ChipsStyled-sc-1rq6ue2-19 dDTkNx")
+                    for tag in tags:
+                        inner_text = tag.get_text(strip=True)
+                        print(inner_text,", ", end="")
                 print("\n")
+                #w jakim formacie to zapisywać? baza danych? json? po prostu txt?
+                #wpierdolic to wszystko do jakiegoś excela i analiza
     
     def GoToNextSite(self):
         self.currentSite+=1
@@ -100,5 +116,5 @@ numer_stron_sesji = bot.GetAllSitesNums()
 while int(bot.currentSite) < int(numer_stron_sesji):
     bot.GetOffersFromCurrentSite()
     bot.GoToNextSite()
-
+    input(" ")
 input(" ")
