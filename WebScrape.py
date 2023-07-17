@@ -5,10 +5,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from selenium.common.exceptions import NoSuchElementException
+
 from bs4 import BeautifulSoup
 
+
+
+
+
 class Bot:
-    
+    DaneOferty = []
+    IdOferty = 0
     def __init__(self):
         # WebDriver setup to avoid detection
         options = webdriver.ChromeOptions()
@@ -59,17 +66,31 @@ class Bot:
     # Pobierz divy z ofertami
     def GetOffersFromCurrentSite(self):
         oferty = self.bot.find_elements(By.CSS_SELECTOR, 'div[class^="ContentBoxstyles__Wrapper-"]')
+        self.LinkiDoOferty = [None] * len(oferty)
         for oferta in oferty:
             inner_html = oferta.get_attribute("innerHTML")
             soup = BeautifulSoup(inner_html, 'html.parser')
-
+            dane = []
             # Find the desired element by tag, class, or other attributes
             tytul_element = soup.find('h3', attrs={'data-test': 'offer-title'})
             company_name_element = soup.find('span', attrs={'data-test': 'company-name'})
             offer_location_element = soup.find('span', attrs={'data-test': 'offer-location'})
             offer_management_level_element = soup.find('span', attrs={'data-test': 'offer-management-level'})
             date = soup.find('div', class_='JobOfferstyles__FooterText-sc-1rq6ue2-22')
-
+            try:
+                button = oferta.find_element(By.CLASS_NAME, 'JobOfferstyles__TitleButton-sc-1rq6ue2-5.HPWqN')
+                button.click()
+                href_element = oferta.find_element(By.CLASS_NAME, 'OfferLocationsListstyles__LocationsItemLink-sc-b1eixg-2.ZUWyH')
+                href = href_element.get_attribute("href")
+                self.LinkiDoOferty[self.IdOferty] = href
+                self.IdOferty+=1
+            except NoSuchElementException:
+                offer_link = soup.find('a', attrs={'data-test': 'offer-link'})
+                if offer_link is not None:
+                    href = offer_link['href']
+                    self.LinkiDoOferty[self.IdOferty] = href
+                    self.IdOferty+=1
+                    continue
             # Get the text of the element, checking if it exists
             tytul = tytul_element.text if tytul_element else ''
             company = company_name_element.text if company_name_element else ''
@@ -77,32 +98,48 @@ class Bot:
             management_level = offer_management_level_element.text if offer_management_level_element else ''
             Pdate = date.text if date else ''
             Pdate = Pdate.replace("opublikowana: ", "")
-
+            
+            
             # Print the details only if the title is not empty
             if tytul:
-                print("Tytuł oferty: " + tytul)
-                print("Firma:" + company)
-                print("Lokalizacja: " + location)
-                print("Doświadczenie: " + management_level)
-                print("Data opublikowania: " + Pdate)
+                dane = [tytul,company,location,management_level,Pdate,None,None,self.IdOferty]
                 
-                #Jeśli na ogłoszeniu są juz napisane technologie to git jak nie to trzeba będzie wejść w ogłoszenie i je wziąć OOF :ccccc
-                    # TODO: wejść w każdą ofertę i wyciągnąć: Mile widziane technologie, doświadczenie, wymagania, specjalizacja costam cośtam
-                    #prawdopodobnie trzeba będzie uzyc AI do czytania i skracania teksów do jednego słowa na kategorie czy coś
+                
+                self.IdOferty+=1
+                if soup.find('span', attrs={'data-test': 'offer-salary'}):
+                    salary = soup.find('span', attrs={'data-test': 'offer-salary'})
+                    dane[6] = salary.text
                     
                 if soup.find('div', attrs={'data-test': 'offer-tags'}):
-                    print("Tagi narzędzi pracy: ")
                     tagi = soup.find('div', attrs={'data-test': 'offer-tags'})
                     inner_html = str(tagi)
                     tag_div = BeautifulSoup(inner_html, 'html.parser')
                     tags = tag_div.find_all(class_="Chipsstyles__Wrapper-sc-17yerqz-0 cShFq JobOfferstyles__ChipsStyled-sc-1rq6ue2-19 dDTkNx")
+                    tagarray = []
                     for tag in tags:
                         inner_text = tag.get_text(strip=True)
-                        print(inner_text,", ", end="")
-                print("\n")
+                        tagarray.append(inner_text)
+                    dane[5] = tagarray
+                self.DaneOferty.append(dane)
                 #w jakim formacie to zapisywać? baza danych? json? po prostu txt?
                 #wpierdolic to wszystko do jakiegoś excela i analiza
-    
+                
+                
+                #wejście w oferte
+                #self.bot.get(href_link)
+                    #Dodać
+                    #Technologie, których używamy "Mile widziane"
+                    #Czy wymagają i ile lat doświadczenia
+                    #Specjalizacje
+                    #Bachelor's/Master's/PhD in STEM albo bycie studentem(debilem)
+                    #Jeśli na ogłoszeniu są juz napisane technologie to git jak nie to trzeba będzie wejść w ogłoszenie i je wziąć OOF :ccccc
+                        # TODO: wejść w każdą ofertę i wyciągnąć: Mile widziane technologie, doświadczenie, wymagania, specjalizacja costam cośtam
+                        #prawdopodobnie trzeba będzie uzyc AI do czytania i skracania teksów do jednego słowa na kategorie czy coś
+                        #ale openAI jest płatne, jebać to pisze własne AI
+                #wyjście z oferty
+                #self.bot.get("https://it.pracuj.pl/?pn=" + str(self.currentSite))
+        self.IdOferty = 0
+        del self.LinkiDoOferty[:]      
     def GoToNextSite(self):
         self.currentSite+=1
         self.bot.get("https://it.pracuj.pl/?pn=" + str(self.currentSite))
@@ -115,6 +152,10 @@ numer_stron_sesji = bot.GetAllSitesNums()
 
 while int(bot.currentSite) < int(numer_stron_sesji):
     bot.GetOffersFromCurrentSite()
+    #wejdz w każdy self.LinkiDoOferty i pobierz z niego dane i wpierdol do bot.DaneOferty, chce sie zajebać
+    for dane in bot.DaneOferty:
+        print(dane)
     bot.GoToNextSite()
-    input(" ")
+    
+#    input(" ")
 input(" ")
