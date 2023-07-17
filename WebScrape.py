@@ -109,7 +109,6 @@ class Bot:
         #wejdz w każdy self.LinkiDoOferty i pobierz z niego dane i wpierdol do bot.DaneOferty, chce sie zajebać
         #Pobierz dane ze strony oferty
         for oferta in self.LinkiDoOferty:
-            input(str(oferta))
             self.bot.get(str(oferta))
             #geting data
             #PAIN
