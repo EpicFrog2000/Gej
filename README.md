@@ -6,6 +6,6 @@ _Below is an example of how you can instruct your audience on installing and set
    git clone git@github.com/your_username/Job_Market_Analize.git
    ```
 
-#Currently using:
--Webdriver
--Selenium
+#Currently using:</br>
+-Webdriver</br>
+-Selenium</br>
