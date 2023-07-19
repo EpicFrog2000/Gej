@@ -1,6 +1,6 @@
 ## About The Project
 
-For now program is scraping data from it.pracuj.pl.
+By far, this app is getting data only from it.pracuj.pl.
 
 ### Installation
 
@@ -24,7 +24,7 @@ docker run webscrape
 
 ## TODO: </br>
 1. Finish gathering data script
-2. store and organise data
-3. analyze data
-4. visualize data
-5. expand
+2. Store and organise data
+3. Analyze data
+4. Visualize data
+5. Expand
