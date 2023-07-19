@@ -6,7 +6,7 @@ For now program is scraping data from it.pracuj.pl.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username/Job_Market_Analize.git
+   git clone https://github.com/EpicFrog2000/Job_Market_Analize.git
    ```
 
 # Currently using:</br>
