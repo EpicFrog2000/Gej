@@ -5,9 +5,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
-import time
 import sys
 import html
+
+import DbOperations
 
 def extract_numeric_value(text):
     # Remove any non-numeric characters and spaces from the text
@@ -15,18 +16,13 @@ def extract_numeric_value(text):
     return int(numeric_text)
 
     #shows progress on getting data
-def loading_bar(cur_site, max_sites, execution_time):    
+def loading_bar(cur_site, max_sites):    
     bar_length = 50
     progress = cur_site / max_sites
     block = int(round(bar_length * progress))
     loading_bar_str = "[" + "=" * block + " " * (bar_length - block) + "]"
     percent_complete = round(progress * 100, 2)
-    time_left = execution_time * (max_sites - cur_site)
-    # Subtract the execution time spent so far from the total time_left
-    time_left -= execution_time * cur_site
-    # Convert time_left from seconds to minutes and round it to the nearest whole number
-    time_left_minutes = round(time_left / 60)
-    sys.stdout.write(f"\r{loading_bar_str} {percent_complete:.2f}% Complete, Time left: about {time_left_minutes} minutes")
+    sys.stdout.write(f"\r{loading_bar_str} {percent_complete:.2f}% Complete")
     sys.stdout.flush()
 
 class Bot:
@@ -78,7 +74,7 @@ class Bot:
     def get_data(self):
         oferty = self.bot.find_elements(By.CSS_SELECTOR, 'div.ContentBoxstyles__Wrapper-sc-11jmnka-0.jevXWE.JobOfferstyles__ContentBoxWrapper-sc-1rq6ue2-0')
         self.id_oferty = 0
-        self.linki_do_oferty = [None] * len(oferty)
+        self.linki_do_oferty = [''] * len(oferty)
 
         # Pobierz linki ofert
         for oferta in oferty:
@@ -91,7 +87,7 @@ class Bot:
             except NoSuchElementException:
                 offer_link_element = oferta.find_element(By.CSS_SELECTOR, 'a[data-test="offer-link"]')
                 link_text = offer_link_element.get_attribute("href")
-                if link_text is not None:
+                if link_text is not '':
                     self.linki_do_oferty[self.id_oferty] = link_text
             self.id_oferty += 1
         self.id_oferty = 0
@@ -99,9 +95,9 @@ class Bot:
         # Pobierz dane z linków do ofert
         #self.linki_do_oferty = list(set(self.linki_do_oferty)) will do something with repeating offers later
         for oferta in self.linki_do_oferty:
-            if oferta is not None:
+            if oferta is not '':
                 self.bot.get(str(oferta))
-                inner_data = [None] * 12
+                inner_data = [''] * 12
                 # getting data
                 # title?
                 try:
@@ -138,31 +134,32 @@ class Bot:
                     salary_from = extract_numeric_value(html.unescape(salary_from.get_attribute("innerHTML")))
                     salary_to = extract_numeric_value(html.unescape(salary_to.get_attribute("innerHTML")))
                     inner_data[4] = salary_from
-                    inner_data[5] = salary_from
+                    #inner_data[5] = salary_to
                 except NoSuchElementException:
+                    inner_data[4] = 0
                     pass 
                 # tryb_pracy?
                 try:
                     tryb_pracy = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-modes-text"]')
-                    inner_data[6] = tryb_pracy.get_attribute("innerHTML")
+                    inner_data[5] = tryb_pracy.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # etat?
                 try:
                     etat = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-schedule-text"]')
-                    inner_data[7] = etat.get_attribute("innerHTML")
+                    inner_data[6] = etat.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # kontrakt?
                 try:
                     kontrakt = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-contracts-text"]')
-                    inner_data[8] = kontrakt.get_attribute("innerHTML")
+                    inner_data[7] = kontrakt.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # specjalizacja?
                 try:
                     specjalizacja = self.bot.find_element(By.CSS_SELECTOR, 'span.offer-viewPFKc0t')
-                    inner_data[9] = specjalizacja.get_attribute("innerHTML")
+                    inner_data[8] = specjalizacja.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # technologie_wymagane?
@@ -175,7 +172,7 @@ class Bot:
                         link_element = element.find_element(By.TAG_NAME, 'p')
                         inner_html = link_element.get_attribute("innerHTML")
                         self.wymagane.append(inner_html)
-                    inner_data[10] = self.wymagane
+                    inner_data[9] = self.wymagane
                 except NoSuchElementException:
                     pass
                 # technologie mile widziane?
@@ -188,7 +185,7 @@ class Bot:
                         link_element = element.find_element(By.TAG_NAME, 'p')
                         inner_html = link_element.get_attribute("innerHTML")
                         self.mile_widziane.append(inner_html)
-                    inner_data[11] = self.mile_widziane
+                    inner_data[10] = self.mile_widziane
                 except NoSuchElementException:
                     pass
                 # doswiadczenie?
@@ -219,28 +216,44 @@ bot = Bot()
 bot.get_site_ready()
 bot.click_button_acc()
 numer_stron_sesji = bot.get_all_sites_nums()
-#print("title, company, location, management_level, salary, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA]") #Will be more data later
-end_time = 0
-start_time = time.time()
+#print("title, company, location, management_level, salary_from, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA]") #Will be more data later
 while int(bot.current_site) < int(numer_stron_sesji):
-    execution_time = end_time - start_time
     bot.get_data()
-    end_time = time.time()
-    loading_bar(int(bot.current_site), int(numer_stron_sesji), execution_time) # works stupid, i am stupid, will fix later
     #print data every like 19 offers
-    print()
+    #print()
+    formatted_list = []
     for inner_list in bot.dane_oferty:
+        # Convert the lists to strings (comma-separated) for technologie_wymagane and technologie_mile_widziane
+        tech_wymagane_str = ",".join(inner_list[9]) if inner_list[9] else ''
+        tech_mile_widziane_str = ",".join(inner_list[10]) if inner_list[10] else ''
+        
+        # Create a tuple with modified elements
+        formatted_item = (
+            inner_list[0],
+            inner_list[1],
+            inner_list[2],
+            inner_list[3],
+            inner_list[4],
+            inner_list[5],
+            inner_list[6],
+            inner_list[7],
+            inner_list[8],
+        )
+        formatted_list.append(formatted_item)
+    #for item in formatted_list:
+    #    print(item)
+    DbOperations.insert_data(formatted_list)
         #for item in inner_list:
-        print("title: ", inner_list[0], "\n")
-        print("company: ", inner_list[1], "\n")
-        print("location: ", inner_list[2], "\n")
-        print("management_level: ", inner_list[3], "\n")
-        print("salary: ", inner_list[4], "\n")
-        print("tryb_pracy: ", inner_list[5], "\n")
-        print("etat: ", inner_list[6], "\n")
-        print("kontrakt: ", inner_list[7], "\n")
-        print("specjalizacja: ", inner_list[8], "\n")
-        print("==================================================================\n")
+        #print("title: ", inner_list[0], "\n")
+        #print("company: ", inner_list[1], "\n")
+        #print("location: ", inner_list[2], "\n")
+        #print("management_level: ", inner_list[3], "\n")
+        #print("salary: ", inner_list[4], "\n")
+        #print("tryb_pracy: ", inner_list[5], "\n")
+        #print("etat: ", inner_list[6], "\n")
+        #print("kontrakt: ", inner_list[7], "\n")
+        #print("specjalizacja: ", inner_list[8], "\n")
+        #print("==================================================================\n")
     bot.go_to_next_site()
 #input(" ")
 
