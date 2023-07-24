@@ -5,13 +5,29 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
-
+import time
+import sys
 import html
 
 def extract_numeric_value(text):
     # Remove any non-numeric characters and spaces from the text
     numeric_text = ''.join(filter(str.isdigit, text))
     return int(numeric_text)
+
+    #shows progress on getting data
+def loading_bar(cur_site, max_sites, execution_time):    
+    bar_length = 50
+    progress = cur_site / max_sites
+    block = int(round(bar_length * progress))
+    loading_bar_str = "[" + "=" * block + " " * (bar_length - block) + "]"
+    percent_complete = round(progress * 100, 2)
+    time_left = execution_time * (max_sites - cur_site)
+    # Subtract the execution time spent so far from the total time_left
+    time_left -= execution_time * cur_site
+    # Convert time_left from seconds to minutes and round it to the nearest whole number
+    time_left_minutes = round(time_left / 60)
+    sys.stdout.write(f"\r{loading_bar_str} {percent_complete:.2f}% Complete, Time left: about {time_left_minutes} minutes")
+    sys.stdout.flush()
 
 class Bot:
     def __init__(self):
@@ -21,6 +37,8 @@ class Bot:
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
         options.add_argument("--incognito")
+        options.add_argument("--disable-images")
+        options.add_argument("--disable-extensions")
         desired_version = "114.0.5735.90"  # Replace with the desired version, or wait for chromedriver to update
         self.bot = webdriver.Chrome(service=Service(ChromeDriverManager(version=desired_version).install()), options=options)
         self.bot.get("https://it.pracuj.pl/")
@@ -35,7 +53,7 @@ class Bot:
         )
         button = self.bot.find_element(By.CLASS_NAME, "size-medium.variant-primary.cookies_b1fqykql")
         button.click() 
-          
+
     def get_site_ready(self):
         WebDriverWait(self.bot, 1000).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "[class^='ContentBoxstyles__Wrapper-']"))
@@ -43,7 +61,7 @@ class Bot:
         WebDriverWait(self.bot, 1000).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "[class^='Paginatorstyles__Wrapper-sc-1ur9l1s-0 dDposH']"))
         )
-        
+
     # Pobiera ile jest stron z ofertami
     def get_all_sites_nums(self):
         WebDriverWait(self.bot, 100).until(
@@ -55,7 +73,7 @@ class Bot:
         link_element = last_item.find_element(By.TAG_NAME, 'a')
         numer_stron_sesji = link_element.get_attribute("innerHTML")
         return numer_stron_sesji
-    
+
     # Pobieranie danych na temat ofert
     def get_data(self):
         oferty = self.bot.find_elements(By.CSS_SELECTOR, 'div.ContentBoxstyles__Wrapper-sc-11jmnka-0.jevXWE.JobOfferstyles__ContentBoxWrapper-sc-1rq6ue2-0')
@@ -77,8 +95,9 @@ class Bot:
                     self.linki_do_oferty[self.id_oferty] = link_text
             self.id_oferty += 1
         self.id_oferty = 0
-        
+
         # Pobierz dane z linków do ofert
+        #self.linki_do_oferty = list(set(self.linki_do_oferty)) will do something with repeating offers later
         for oferta in self.linki_do_oferty:
             if oferta is not None:
                 self.bot.get(str(oferta))
@@ -182,7 +201,7 @@ class Bot:
                         text = paragraf.find_element(By.TAG_NAME, 'p')
                         inner_html = text.get_attribute("innerHTML")
                         # Prawdopodobnie trzeba przędzie patrzeć czy w jakimś paragrawfie jest x słowo/a z naszego zbioru i jesli jest to pobrac i jakos to zformatowac do jednego słowa lub cyfry na paragraf
-                        #TODO: FINISH THIS SHIT
+                        
                 except NoSuchElementException:
                     pass
                 #
@@ -200,15 +219,33 @@ bot = Bot()
 bot.get_site_ready()
 bot.click_button_acc()
 numer_stron_sesji = bot.get_all_sites_nums()
-print("title, company, location, management_level, salary, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA],") #Will be more data later
+#print("title, company, location, management_level, salary, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA]") #Will be more data later
+end_time = 0
+start_time = time.time()
 while int(bot.current_site) < int(numer_stron_sesji):
+    execution_time = end_time - start_time
     bot.get_data()
-    
+    end_time = time.time()
+    loading_bar(int(bot.current_site), int(numer_stron_sesji), execution_time) # works stupid, i am stupid, will fix later
     #print data every like 19 offers
+    print()
     for inner_list in bot.dane_oferty:
-        for item in inner_list:
-            print(item, end=' ')
-        print()
-
+        #for item in inner_list:
+        print("title: ", inner_list[0], "\n")
+        print("company: ", inner_list[1], "\n")
+        print("location: ", inner_list[2], "\n")
+        print("management_level: ", inner_list[3], "\n")
+        print("salary: ", inner_list[4], "\n")
+        print("tryb_pracy: ", inner_list[5], "\n")
+        print("etat: ", inner_list[6], "\n")
+        print("kontrakt: ", inner_list[7], "\n")
+        print("specjalizacja: ", inner_list[8], "\n")
+        print("==================================================================\n")
     bot.go_to_next_site()
 #input(" ")
+
+#TODO:
+# link with database
+# split, format and "make usable" info form data like kontrakt, specjalizacja or management_level
+# ^ maybe get discionary of this data to better insert into database
+# finish getting  doswiadczenie and studia/wykrztalcenie?
