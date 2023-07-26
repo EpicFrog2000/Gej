@@ -2,14 +2,13 @@ import db_operations
 import bot_class
     
 bot = bot_class.Bot()
-bot.get_site_ready()
 bot.click_button_acc()
 numer_stron_sesji = bot.get_all_sites_nums()
 #print("title, company, location, management_level, salary_from, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA]") #Will be more data later
 while int(bot.current_site) <= int(numer_stron_sesji):
-    print("\r Progres: ", bot.current_site, " / ", numer_stron_sesji)
     bot.get_data()
     formatted_list = []
+    unique_items = set()
     for inner_list in bot.dane_oferty:
         formatted_item = (
             inner_list[0],#title
@@ -22,9 +21,13 @@ while int(bot.current_site) <= int(numer_stron_sesji):
             inner_list[7],#kontrakt
             inner_list[8],#specjalizacja
         )
-        formatted_list.append(formatted_item)
+        if formatted_item not in unique_items:
+            formatted_list.append(formatted_item)
+            unique_items.add(formatted_item)
     #insert data to database
     db_operations.insert_data(formatted_list)
+    print(f"\rProgres: {bot.current_site} / {numer_stron_sesji}")
+    print(formatted_list)
     bot.go_to_next_site()
 #TODO:
 # link with database
