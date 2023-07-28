@@ -214,7 +214,7 @@ class Bot:
                             for keyword in key_words_doswiadczenie:
                                 if keyword in str(inner_html):
                                     result = extract_number(inner_html)
-                                    inner_data[11] = result # THIS SUCKS
+                                    inner_data[11] = result # THIS SUCKS but works
                                     doswiadczenie = True
                                     break
                 except NoSuchElementException:

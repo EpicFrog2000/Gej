@@ -34,5 +34,3 @@ while int(bot.current_site) <= int(numer_stron_sesji):
     os.system('cls')
     print(f"\rProgres: {bot.current_site} / {numer_stron_sesji}")
     bot.go_to_next_site()
-#TODO:
-# add mysql to docker
