@@ -8,7 +8,7 @@ Clone the repo
    ```sh
    git clone https://github.com/EpicFrog2000/Job_Market_Analize.git
    ```
-To use test sql data copy and paste part2 at the end of part1 file and then import part1 to database
+test_data_job_market.sql is used to import data base in mysql
 
 To build this project using Docker engine try:
 ```sh
