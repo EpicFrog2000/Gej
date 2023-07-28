@@ -4,6 +4,26 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 import html
+import re
+
+key_words_doswiadczenie = {
+"doświadczenia",
+"doświadczenie",
+"experience",
+}
+
+def extract_number(input_string):
+    # Define the regular expression pattern to match any number
+    pattern = r'\d+'
+    
+    # Use re.search() to search for the pattern in the input_string
+    match = re.search(pattern, input_string)
+    
+    # If a match is found, return the matched number; otherwise, return None
+    if match:
+        return match.group()
+    else:
+        return None
 
 def extract_numeric_value(text):
     # Remove any non-numeric characters and spaces from the text
@@ -12,13 +32,13 @@ def extract_numeric_value(text):
 
 class Bot:
     def __init__(self):
+        print("\rInitiation", end="")
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
         options.add_argument('--window-size=1920x1080')
-        options.add_argument('--disable-cookies')
         options.add_argument("--incognito")
-        options.add_argument("pageLoadStrategy=eager")
+        #options.add_argument("pageLoadStrategy=eager")
         
         self.bot = webdriver.Chrome(options=options)
         url = 'https://it.pracuj.pl/'
@@ -27,33 +47,38 @@ class Bot:
         self.current_site = 1
         self.linki_do_oferty = []
         self.dane_oferty = []
-    
+           
     def click_button_acc(self):
-        WebDriverWait(self.bot, 100).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "size-medium.variant-primary.cookies_b1fqykql"))
-        )
-        button = self.bot.find_element(By.CLASS_NAME, "size-medium.variant-primary.cookies_b1fqykql")
-        button.click() 
+        print("\rClicking cookies button", end="")
+        try:
+            button = WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.XPATH, "//button[@class='size-medium variant-primary cookies_b1fqykql']")))
+            button.click()
+        except NoSuchElementException:
+            pass
         
     # Pobiera ile jest stron z ofertami
     def get_all_sites_nums(self):
-        wait = WebDriverWait(self.bot, 10)
-        div = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
-        ul_element = div.find_element(By.CSS_SELECTOR, 'ul.pagination')
-        li_elements = ul_element.find_elements(By.TAG_NAME, 'li')
-        last_item = li_elements[-2]
-        link_element = last_item.find_element(By.TAG_NAME, 'a')
-        numer_stron_sesji = link_element.get_attribute("innerHTML")
-        return numer_stron_sesji
+        print("\rGetting nums of all sites", end="")
+        try:
+            div = WebDriverWait(self.bot, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
+            ul_element = div.find_element(By.CSS_SELECTOR, 'ul.pagination')
+            li_elements = ul_element.find_elements(By.TAG_NAME, 'li')
+            last_item = li_elements[-2]
+            link_element = last_item.find_element(By.TAG_NAME, 'a')
+            numer_stron_sesji = link_element.get_attribute("innerHTML")
+            return int(numer_stron_sesji)
+        except Exception as e:
+            print(f"\rError occurred while getting the number of pages: {e}")
+            pass
     
     # Pobieranie danych na temat ofert
-    def get_data(self):
+    def get_data(self,numer_stron_sesji):
+        print("\rGetting data", end="")
         self.dane_oferty.clear()
         oferty = self.bot.find_elements(By.CSS_SELECTOR, 'div.ContentBoxstyles__Wrapper-sc-11jmnka-0.jevXWE.JobOfferstyles__ContentBoxWrapper-sc-1rq6ue2-0')
         self.id_oferty = 0
         self.linki_do_oferty = [''] * len(oferty)
-
-
+        print("\rGetting offer links", end="")
         for oferta in oferty:
             # Pobierz linki ofert
             unique_links = set()
@@ -75,10 +100,16 @@ class Bot:
         self.id_oferty = 0
 
         # Pobierz dane z linków do ofert
-        for oferta in self.linki_do_oferty:
+        print("\rStart gathering data from offers", end="")
+        total_offers = len(self.linki_do_oferty)
+
+        for index, oferta in enumerate(self.linki_do_oferty, start=1):
+            progress_msg = f"Getting data {index} / {total_offers}               "
+            print(f"\r{progress_msg}", end="")
+            
             if oferta != '':
                 self.bot.get(str(oferta))
-                inner_data = [''] * 12
+                inner_data = [''] * 13
                 # getting data
                 # title?
                 try:
@@ -169,16 +200,23 @@ class Bot:
                     inner_data[10] = self.mile_widziane
                 except NoSuchElementException:
                     pass
-                # doswiadczenie?
-                # studia/wykrztalcenie?
+                # doswiadczenie? sucks but kinda works
+                # studia/wykrztalcenie? :C
                 try:
                     div_doswiadczenie = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="requirements-expected-1"][data-test="section-requirements-expected"]')
                     lista = div_doswiadczenie.find_element(By.CSS_SELECTOR, '[class^="offer-view6lWuAT"]')
                     li_elements = lista.find_elements(By.TAG_NAME, 'li')
+                    doswiadczenie = False
                     for paragraf in li_elements:
                         text = paragraf.find_element(By.TAG_NAME, 'p')
                         inner_html = text.get_attribute("innerHTML")
-                        # Prawdopodobnie trzeba przędzie patrzeć czy w jakimś paragrawfie jest x słowo/a z naszego zbioru i jesli jest to pobrac i jakos to zformatowac do jednego słowa lub cyfry na paragraf
+                        if doswiadczenie == False:
+                            for keyword in key_words_doswiadczenie:
+                                if keyword in str(inner_html):
+                                    result = extract_number(inner_html)
+                                    inner_data[11] = result # THIS SUCKS
+                                    doswiadczenie = True
+                                    break
                 except NoSuchElementException:
                     pass
                 #
@@ -189,7 +227,8 @@ class Bot:
         
 
     def go_to_next_site(self):
+        print("\rGoint to next site", end="")
         self.current_site += 1
         self.bot.get("https://it.pracuj.pl/?pn=" + str(self.current_site))
-        WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
+        WebDriverWait(self.bot, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
         self.bot.execute_script("return document.readyState")

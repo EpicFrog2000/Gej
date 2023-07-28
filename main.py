@@ -1,12 +1,14 @@
 import db_operations
 import bot_class
-    
+import os
+
 bot = bot_class.Bot()
 bot.click_button_acc()
 numer_stron_sesji = bot.get_all_sites_nums()
-#print("title, company, location, management_level, salary_from, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA]") #Will be more data later
+id_offer = 1
+#print("title, company, location, management_level, salary_from, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA], doswiadczenie") #Will be more data later
 while int(bot.current_site) <= int(numer_stron_sesji):
-    bot.get_data()
+    bot.get_data(numer_stron_sesji)
     formatted_list = []
     unique_items = set()
     for inner_list in bot.dane_oferty:
@@ -20,18 +22,17 @@ while int(bot.current_site) <= int(numer_stron_sesji):
             inner_list[6],#etat
             inner_list[7],#kontrakt
             inner_list[8],#specjalizacja
+            tuple(inner_list[9]),  # technologie_wymagane (converted to a tuple)
+            tuple(inner_list[10]),  # technologie_mile_widziane (converted to a tuple)
+            inner_list[11],#doswiadczenie
         )
         if formatted_item not in unique_items:
             formatted_list.append(formatted_item)
             unique_items.add(formatted_item)
     #insert data to database
-    db_operations.insert_data(formatted_list)
+    id_offer = db_operations.insert_data(formatted_list, id_offer)
+    os.system('cls')
     print(f"\rProgres: {bot.current_site} / {numer_stron_sesji}")
-    print(formatted_list)
     bot.go_to_next_site()
 #TODO:
-# link with database
-# split, format and "make usable" info form data like kontrakt, specjalizacja or management_level
-# ^ maybe get discionary of this data to better insert into database
-# finish getting  doswiadczenie and studia/wykrztalcenie?
 # add mysql to docker
