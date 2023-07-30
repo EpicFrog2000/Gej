@@ -22,8 +22,8 @@ while int(bot.current_site) <= int(numer_stron_sesji):
             inner_list[6],#etat
             inner_list[7],#kontrakt
             inner_list[8],#specjalizacja
-            tuple(inner_list[9]),  # technologie_wymagane (converted to a tuple)
-            tuple(inner_list[10]),  # technologie_mile_widziane (converted to a tuple)
+            tuple(inner_list[9]),# technologie_wymagane (converted to a tuple)
+            tuple(inner_list[10]),# technologie_mile_widziane (converted to a tuple)
             inner_list[11],#doswiadczenie
         )
         if formatted_item not in unique_items:
@@ -36,3 +36,14 @@ while int(bot.current_site) <= int(numer_stron_sesji):
     bot.go_to_next_site()
 #TODO:
 # add mysql to docker
+# test eng to pl input in db
+
+#(xd)
+# DELETE FROM data;
+# DELETE FROM etat;
+# DELETE FROM kontrakt;
+# DELETE FROM management_level;
+# DELETE FROM specjalizacje;
+# DELETE FROM technologie_wymagane;
+# DELETE FROM technologie_mile_widziane;
+# DELETE FROM work_type;

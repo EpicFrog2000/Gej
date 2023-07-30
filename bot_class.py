@@ -13,13 +13,8 @@ key_words_doswiadczenie = {
 }
 
 def extract_number(input_string):
-    # Define the regular expression pattern to match any number
     pattern = r'\d+'
-    
-    # Use re.search() to search for the pattern in the input_string
     match = re.search(pattern, input_string)
-    
-    # If a match is found, return the matched number; otherwise, return None
     if match:
         return match.group()
     else:
@@ -39,7 +34,6 @@ class Bot:
         options.add_argument('--window-size=1920x1080')
         options.add_argument("--incognito")
         #options.add_argument("pageLoadStrategy=eager")
-        
         self.bot = webdriver.Chrome(options=options)
         url = 'https://it.pracuj.pl/'
         self.bot.get(url)
@@ -53,7 +47,8 @@ class Bot:
         try:
             button = WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.XPATH, "//button[@class='size-medium variant-primary cookies_b1fqykql']")))
             button.click()
-        except NoSuchElementException:
+        except NoSuchElementException as e:
+            print(f"\rError occurred while clicking cookies button: {e}")
             pass
         
     # Pobiera ile jest stron z ofertami
@@ -106,10 +101,13 @@ class Bot:
         for index, oferta in enumerate(self.linki_do_oferty, start=1):
             progress_msg = f"Getting data {index} / {total_offers}               "
             print(f"\r{progress_msg}", end="")
-            
             if oferta != '':
-                self.bot.get(str(oferta))
-                inner_data = [''] * 13
+                try:
+                    self.bot.get(str(oferta))
+                    WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.ID, "kansas-offerview")))
+                except:
+                    continue
+                inner_data = [''] * 14
                 # getting data
                 # title?
                 try:
@@ -214,9 +212,10 @@ class Bot:
                             for keyword in key_words_doswiadczenie:
                                 if keyword in str(inner_html):
                                     result = extract_number(inner_html)
-                                    inner_data[11] = result # THIS SUCKS
-                                    doswiadczenie = True
-                                    break
+                                    if result is not None and int(result) < 30:
+                                        inner_data[11] = result # THIS SUCKS
+                                        doswiadczenie = True
+                                        break
                 except NoSuchElementException:
                     pass
                 #
@@ -225,10 +224,9 @@ class Bot:
                 self.dane_oferty.append(inner_data)
         self.linki_do_oferty.clear()
         
-
     def go_to_next_site(self):
         print("\rGoint to next site", end="")
         self.current_site += 1
         self.bot.get("https://it.pracuj.pl/?pn=" + str(self.current_site))
-        WebDriverWait(self.bot, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
+        WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
         self.bot.execute_script("return document.readyState")
