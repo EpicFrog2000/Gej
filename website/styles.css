@@ -1,30 +1,23 @@
-.today_data_div{
-    text-align: center;
-    background-color: lightgreen;
-    padding: 20px;
-    display: flex;
+body{
+    margin: 0px;
+    padding: 0px;
 }
 
-.salary_stuff{
-    position: relative;
-    background-color: lightblue;
-    min-width: 350px;
-    max-width: 20%;
-    height: 500px;
-    padding: 15px;
+.today_data_div {
     text-align: center;
-    border-radius: 25px;
-    margin: 20px;
+    background-color: gray;
+    display: flex;
+    overflow-x: auto;
+    padding-left: 100px;
+    padding-right: 100px;
 }
-.etat_stuff{
+
+.stuff {
     position: relative;
     background-color: lightblue;
-    min-width: 350px;
-    max-width: 20%;
-    height: 500px;
-    padding: 15px;
+    min-width: 20%;
     text-align: center;
     border-radius: 25px;
     margin: 20px;
-    
+    padding: 20px;
 }

@@ -35,10 +35,10 @@ class Bot:
         options.add_argument("--incognito")
         #options.add_argument("pageLoadStrategy=eager")
         self.bot = webdriver.Chrome(options=options)
-        url = 'https://it.pracuj.pl/'
+        self.current_site = 1
+        url = 'https://it.pracuj.pl/?pn=' + str(self.current_site)
         self.bot.get(url)
         self.bot.execute_script("return document.readyState")
-        self.current_site = 1
         self.linki_do_oferty = []
         self.dane_oferty = []
            
@@ -212,7 +212,7 @@ class Bot:
                             for keyword in key_words_doswiadczenie:
                                 if keyword in str(inner_html):
                                     result = extract_number(inner_html)
-                                    if result is not None and int(result) < 30:
+                                    if result is not None and int(result) < 16:
                                         inner_data[11] = result # THIS SUCKS
                                         doswiadczenie = True
                                         break
