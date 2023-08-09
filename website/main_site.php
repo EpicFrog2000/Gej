@@ -44,6 +44,7 @@
             <h2>top 20 optional technologii</h2>
             <?php get_opt_tech_data();?>
         </div>
+
     </div>
     <h1 style="text-align: center;">Historic data<h1>
         wykresiki jakies tam gowno kurwaaaaa

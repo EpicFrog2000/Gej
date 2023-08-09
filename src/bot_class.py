@@ -41,6 +41,7 @@ class Bot:
         self.bot.execute_script("return document.readyState")
         self.linki_do_oferty = []
         self.dane_oferty = []
+        self.retry = False
            
     def click_button_acc(self):
         print("\rClicking cookies button", end="")
@@ -63,7 +64,7 @@ class Bot:
             numer_stron_sesji = link_element.get_attribute("innerHTML")
             return int(numer_stron_sesji)
         except Exception as e:
-            print(f"\rError occurred while getting the number of pages: {e}")
+            print("\rError occurred while getting the number of pages")
             pass
     
     # Pobieranie danych na temat ofert
@@ -225,8 +226,19 @@ class Bot:
         self.linki_do_oferty.clear()
         
     def go_to_next_site(self):
-        print("\rGoint to next site", end="")
-        self.current_site += 1
-        self.bot.get("https://it.pracuj.pl/?pn=" + str(self.current_site))
-        WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
-        self.bot.execute_script("return document.readyState")
+        try:
+            self.retry = False
+            print("\rGoint to next site", end="")
+            self.current_site += 1
+            self.bot.get("https://it.pracuj.pl/?pn=" + str(self.current_site))
+            WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
+            self.bot.execute_script("return document.readyState")
+        except:
+            if(self.retry == False):
+                self.retry = True
+                self.current_site -= 1
+            self.go_to_next_site()
+    
+
+    
+    

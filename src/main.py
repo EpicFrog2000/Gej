@@ -2,10 +2,17 @@ import db_operations
 import bot_class
 import os
 
-bot = bot_class.Bot()
-bot.click_button_acc()
-numer_stron_sesji = bot.get_all_sites_nums()
+numer_stron_sesji = 0
 id_offer = 1
+
+db_operations.clear_tables()
+
+while numer_stron_sesji == 0:
+    bot = bot_class.Bot()
+    bot.click_button_acc()
+    numer_stron_sesji = bot.get_all_sites_nums()
+
+
 #print("title, company, location, management_level, salary_from, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA], doswiadczenie") #Will be more data later
 while int(bot.current_site) <= int(numer_stron_sesji):
     bot.get_data(numer_stron_sesji)
@@ -34,16 +41,10 @@ while int(bot.current_site) <= int(numer_stron_sesji):
     os.system('cls')
     print(f"\rProgres: {bot.current_site} / {numer_stron_sesji}")
     bot.go_to_next_site()
+
+db_operations.insert_to_historic_data()
 #TODO:
 # add mysql to docker
-# test eng to pl input in db
-
-#(xd)
-# DELETE FROM data;
-# DELETE FROM etat;
-# DELETE FROM kontrakt;
-# DELETE FROM management_level;
-# DELETE FROM specjalizacje;
-# DELETE FROM technologie_wymagane;
-# DELETE FROM technologie_mile_widziane;
-# DELETE FROM work_type;
+# create tables for historic data
+# finish writing historic data inserting
+# visualize data
