@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 28, 2023 at 04:33 PM
+-- Generation Time: Aug 09, 2023 at 01:51 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -32,12 +32,7 @@ CREATE TABLE `data` (
   `title` varchar(255) DEFAULT NULL,
   `company` varchar(255) DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
-  `management_level` varchar(255) DEFAULT NULL,
   `salary` int(11) DEFAULT NULL,
-  `tryb_pracy` varchar(255) DEFAULT NULL,
-  `etat` varchar(255) DEFAULT NULL,
-  `kontrakt` varchar(255) DEFAULT NULL,
-  `specjalizacja` varchar(255) DEFAULT NULL,
   `doswiadczenie` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -50,6 +45,126 @@ CREATE TABLE `data` (
 CREATE TABLE `etat` (
   `id` int(11) NOT NULL,
   `etat` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_count`
+--
+
+CREATE TABLE `historic_count` (
+  `count` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_etat`
+--
+
+CREATE TABLE `historic_etat` (
+  `pełny etat` int(11) DEFAULT NULL,
+  `część etatu` int(11) DEFAULT NULL,
+  `dodatkowa / tymczasowa` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_kontrakt`
+--
+
+CREATE TABLE `historic_kontrakt` (
+  `umowa o pracę` int(11) DEFAULT NULL,
+  `kontrakt B2B` int(11) DEFAULT NULL,
+  `umowa zlecenie` int(11) DEFAULT NULL,
+  `umowa o staż / praktyki` int(11) DEFAULT NULL,
+  `umowa o dzieło` int(11) DEFAULT NULL,
+  `umowa na zastępstwo` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_management_level`
+--
+
+CREATE TABLE `historic_management_level` (
+  `Mid` int(11) DEFAULT NULL,
+  `asystent` int(11) DEFAULT NULL,
+  `Junior` int(11) DEFAULT NULL,
+  `Senior` int(11) DEFAULT NULL,
+  `ekspert` int(11) DEFAULT NULL,
+  `team manager` int(11) DEFAULT NULL,
+  `menedżer` int(11) DEFAULT NULL,
+  `praktykant / stażysta` int(11) DEFAULT NULL,
+  `dyrektor` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_salary`
+--
+
+CREATE TABLE `historic_salary` (
+  `salary` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_specjalizacja`
+--
+
+CREATE TABLE `historic_specjalizacja` (
+  `specjalizacja` varchar(255) DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_technologie_mile_widziane`
+--
+
+CREATE TABLE `historic_technologie_mile_widziane` (
+  `technologia` varchar(255) DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_technologie_wymagane`
+--
+
+CREATE TABLE `historic_technologie_wymagane` (
+  `technologia` varchar(255) DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historic_work_type`
+--
+
+CREATE TABLE `historic_work_type` (
+  `praca hybrydowa` int(11) DEFAULT NULL,
+  `praca zdalna` int(11) DEFAULT NULL,
+  `praca stacjonarna` int(11) DEFAULT NULL,
+  `praca mobilna` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

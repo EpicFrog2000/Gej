@@ -126,7 +126,7 @@ def insert_to_historic_data():
     connection.execute("SELECT (SUM(CASE WHEN salary > 0 THEN 1 ELSE 0 END) / COUNT(salary)) * 100 AS percentage FROM data;")
     salary_percent = connection.fetchone()
     val = (salary_percent[0], todays_date)
-    sql = "INSERT INTO historic_salary (percent, date) VALUES (%s, %s)"
+    sql = "INSERT INTO historic_salary (salary, date) VALUES (%s, %s)"
     connection.execute(sql, val)
     mydb.commit()
 
@@ -136,7 +136,7 @@ def insert_to_historic_data():
     for x in etat_data:
         val += (x[1],)
     val += (todays_date, )
-    sql = "INSERT INTO historic_etat ('pełny etat', 'część etatu', 'dodatkowa / tymczasowa', date) VALUES (%s, %s, %s, %s)"
+    sql = "INSERT INTO `historic_etat`(`pełny etat`, `część etatu`, `dodatkowa / tymczasowa`, `date`) VALUES (%s, %s, %s, %s)"
     connection.execute(sql, val)
     mydb.commit()
 
@@ -147,7 +147,7 @@ def insert_to_historic_data():
     for x in kontrakt_data:
         val += (x[1],)
     val +=(todays_date,)
-    sql = "INSERT INTO historic_kontrakt ('umowa o pracę', 'kontrakt B2B', 'umowa zlecenie', 'umowa o staż / praktyki', 'umowa o dzieło', 'umowa na zastępstwo', date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO `historic_kontrakt`(`umowa o pracę`, `kontrakt B2B`, `umowa zlecenie`, `umowa o staż / praktyki`, `umowa o dzieło`, `umowa na zastępstwo`, `date`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     connection.execute(sql, val)
     mydb.commit()
         
@@ -157,7 +157,7 @@ def insert_to_historic_data():
     for x in management_level_data:
         val += (x[1],)
     val +=(todays_date,)
-    sql = "INSERT INTO historic_management_level ('Mid', 'asystent', 'Junior', 'Senior', 'ekspert', 'team manager','menedżer', 'praktykant / stażysta','dyrektor', date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql = "INSERT INTO `historic_management_level`(`Mid`, `asystent`, `Junior`, `Senior`, `ekspert`, `team manager`, `menedżer`, `praktykant / stażysta`, `dyrektor`, `date`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     connection.execute(sql, val)
     mydb.commit()
         
@@ -167,7 +167,7 @@ def insert_to_historic_data():
     for x in management_level_data:
         val += (x[1],)
     val +=(todays_date,)
-    sql = "INSERT INTO historic_work_type ('praca hybrydowa', 'praca zdalna', 'praca stacjonarna', 'praca mobilna', date) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT INTO `historic_work_type`(`praca hybrydowa`, `praca zdalna`, `praca stacjonarna`, `praca mobilna`, `date`) VALUES (%s, %s, %s, %s, %s)"
     connection.execute(sql, val)
     mydb.commit()
         
@@ -175,7 +175,7 @@ def insert_to_historic_data():
     specjalizacja_data = connection.fetchall()
     val=()
     for x in specjalizacja_data:
-        sql = "INSERT INTO historic_specjalizacja ('specjalizacja', count, date) VALUES (%s, %s, %s)"
+        sql = "INSERT INTO `historic_specjalizacja`(`specjalizacja`, `count`, `date`) VALUES (%s, %s, %s)"
         val = (x[0],x[1],todays_date,)
         connection.execute(sql, val)
         mydb.commit()
@@ -184,7 +184,7 @@ def insert_to_historic_data():
     wym_tech_data = connection.fetchall()
     val=()
     for x in wym_tech_data:
-        sql = "INSERT INTO historic_technologie_wymagane ('technologia', count, date) VALUES (%s, %s, %s)"
+        sql = "INSERT INTO `historic_technologie_wymagane`(`technologia`, `count`, `date`) VALUES (%s, %s, %s)"
         val = (x[0],x[1],todays_date,)
         connection.execute(sql, val)
         mydb.commit()
@@ -193,13 +193,23 @@ def insert_to_historic_data():
     wym_tech_data = connection.fetchall()
     val=()
     for x in wym_tech_data:
-        sql = "INSERT INTO historic_technologie_mile_widziane ('technologia', count, date) VALUES (%s, %s, %s)"
+        sql = "INSERT INTO `historic_technologie_mile_widziane`(`technologia`, `count`, `date`) VALUES (%s, %s, %s)"
         val = (x[0],x[1],todays_date,)
         connection.execute(sql, val)
         mydb.commit()    
         
 def clear_tables():
     connection = mydb.cursor()
-    sql = "DELETE FROM data, etat, kontrakt, management_level, specjalizacje, technologie_wymagane, technologie_mile_widziane, work_type;"
-    connection.execute(sql)
+    tables_to_clear = [
+        "data",
+        "etat",
+        "kontrakt",
+        "management_level",
+        "specjalizacje",
+        "technologie_wymagane",
+        "technologie_mile_widziane",
+        "work_type"]
+    for table in tables_to_clear:
+        sql = f"DELETE FROM {table};"
+        connection.execute(sql)
     mydb.commit()
