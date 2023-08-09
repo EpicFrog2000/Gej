@@ -128,7 +128,11 @@ class Bot:
                 # location?
                 try:
                     location = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewqtkGPu[data-test="text-benefit"]')
-                    inner_data[2] = location.get_attribute("innerHTML")
+                    parts = location.get_attribute("innerHTML").split(", ")
+                    if len(parts) > 1:
+                        inner_data[2] = parts[0]
+                    else:
+                        inner_data[2] = location.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # management_level?
