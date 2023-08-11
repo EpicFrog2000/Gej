@@ -1,23 +1,98 @@
 body{
+    font-family:monospace;
     margin: 0px;
     padding: 0px;
+    background-color: rgba(4, 22, 34);
+    font-weight: bolder;
+    font-size: large;
+    color: rgb(200, 200, 200);
+    font-size: 20px;
+    text-shadow: 5px 5px 6px black;
+    scroll-behavior: smooth;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.Ban {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(0, 0, 0));
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    z-index: 9999;
+    padding: 10px;
+    text-align: center;
+    color: rgb(200, 200, 200);
+    text-shadow: 5px 5px 6px black;
 }
 
 .today_data_div {
     text-align: center;
-    background-color: gray;
-    display: flex;
-    overflow-x: auto;
-    padding-left: 20px;
-    padding-right: 20px;
+    background-color: rgb(40, 39, 42);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+    transform: translateZ(0);
 }
 
 .stuff {
     position: relative;
-    background-color: lightblue;
     min-width: 20%;
     text-align: center;
+    margin: 25px;
+    padding: 5px;
+    z-index: 1;
+    background-color: rgba(4, 22, 34, 0.6);
+    color: rgb(200, 200, 200);
+    overflow: hidden;
+    text-shadow: 5px 5px 6px black;
+    border: 25px solid transparent;
     border-radius: 25px;
-    margin: 20px;
-    padding: 20px;
+}
+
+.bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 10%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0) 90%, rgba(0, 0, 0, 1) 100%, transparent 100%),
+        linear-gradient(to top, transparent 0%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 10%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0) 90%, rgba(0, 0, 0, 1) 100%, transparent 100%);
+    background-size: cover;
+    background-position: center;
+    transform: translateZ(0);
+}
+
+.his {
+    position: relative;
+    height: 500px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: 
+        linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 10%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0) 90%, rgba(0, 0, 0, 1) 100%, transparent 100%),
+        linear-gradient(to top, transparent 0%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 10%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0) 90%, rgba(0, 0, 0, 1) 100%, transparent 100%);
+    background-size: cover;
+    background-position: center;
+    transform: translateZ(0);
 }

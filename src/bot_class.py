@@ -134,6 +134,12 @@ class Bot:
                     else:
                         inner_data[2] = location.get_attribute("innerHTML")
                 except NoSuchElementException:
+                    location = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewUIYWmu[data-test="text-benefit"]')
+                    parts = location.get_attribute("innerHTML").split(", ")
+                    if len(parts) > 1:
+                        inner_data[2] = parts[0]
+                    else:
+                        inner_data[2] = location.get_attribute("innerHTML")
                     pass
                 # management_level?
                 try:

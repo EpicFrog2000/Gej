@@ -196,7 +196,10 @@ def insert_to_historic_data():
         sql = "INSERT INTO `historic_technologie_mile_widziane`(`technologia`, `count`, `date`) VALUES (%s, %s, %s)"
         val = (x[0],x[1],todays_date,)
         connection.execute(sql, val)
-        mydb.commit()    
+        mydb.commit()
+        
+    connection.execute("INSERT INTO historic_location (location, count, date) SELECT location, COUNT(*) AS location_count, '"+str(todays_date)+"' AS date FROM `data` GROUP BY location ORDER BY location_count DESC LIMIT 20;")
+    mydb.commit()
         
 def clear_tables():
     connection = mydb.cursor()

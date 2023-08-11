@@ -74,6 +74,18 @@ CREATE TABLE `historic_etat` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `historic_location`
+--
+
+CREATE TABLE `historic_location` (
+  `location` varchar(255) DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `historic_kontrakt`
 --
 

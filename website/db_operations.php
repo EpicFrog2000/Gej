@@ -17,7 +17,7 @@ function count_all_data(){
     
     while ($row = $result->fetch_assoc()) {
     $count = $row['count'];
-    echo "Dane z ".$count." ofert." ;
+    echo "Na dzień dzisiejszy: ".$count." ofert" ;
     }
 }
 
@@ -178,5 +178,25 @@ function get_opt_tech_data(){
     }
 }
 
+function get_location_data(){
+    global $conn;
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    $sql = "SELECT location, COUNT(*) AS location_count
+    FROM `data`
+    GROUP BY location
+    ORDER BY location_count DESC
+    LIMIT 20;";
+
+    $result = $conn->query($sql);
+
+    while ($row = $result->fetch_assoc()) {
+    $location = $row['location'];
+    $count = $row['location_count'];
+    echo $count . " - " . $location . "</br>";
+    }
+}
 
 ?>
