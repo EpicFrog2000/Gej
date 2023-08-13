@@ -83,7 +83,7 @@ body::-webkit-scrollbar {
 
 .his {
     position: relative;
-    height: 500px;
+    height: auto;
     top: 0;
     left: 0;
     width: 100%;
@@ -95,4 +95,23 @@ body::-webkit-scrollbar {
     background-size: cover;
     background-position: center;
     transform: translateZ(0);
+}
+
+.wykresy{
+    padding-top: 50px;
+    padding-left: 250px;
+    padding-right: 250px;
+    padding-bottom: 500px;
+}
+
+#myChart{
+    margin: 10px;
+    max-width: 20%;
+    max-height: 600px;
+}
+hr{
+    background-color: black;
+    color: black;
+    border: none;
+    height: 2px; 
 }

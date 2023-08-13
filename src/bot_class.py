@@ -32,7 +32,7 @@ class Bot:
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
         options.add_argument('--window-size=1920x1080')
-        options.add_argument("--incognito")
+        #options.add_argument("--incognito")
         #options.add_argument("pageLoadStrategy=eager")
         self.bot = webdriver.Chrome(options=options)
         self.current_site = 1
@@ -65,6 +65,7 @@ class Bot:
             return int(numer_stron_sesji)
         except Exception as e:
             print("\rError occurred while getting the number of pages")
+            self.get_all_sites_nums()
             pass
     
     # Pobieranie danych na temat ofert
@@ -100,10 +101,11 @@ class Bot:
         total_offers = len(self.linki_do_oferty)
 
         for index, oferta in enumerate(self.linki_do_oferty, start=1):
-            progress_msg = f"Getting data {index} / {total_offers}               "
+            progress_msg = f"\rGetting data {index} / {total_offers}, {str(oferta)}               "
             print(f"\r{progress_msg}", end="")
             if oferta != '':
                 try:
+                    print("\rGetting offer site", end="")
                     self.bot.get(str(oferta))
                     WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.ID, "kansas-offerview")))
                 except:
@@ -112,12 +114,14 @@ class Bot:
                 # getting data
                 # title?
                 try:
+                    print("\rGetting offer title", end="")
                     title = self.bot.find_element(By.CSS_SELECTOR, 'h1.offer-viewkHIhn3[data-test="text-positionName"][data-scroll-id="job-title"]')
                     inner_data[0] = title.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # company?
                 try:
+                    print("\rGetting offer company", end="")
                     company = self.bot.find_element(By.CSS_SELECTOR, 'h2.offer-viewwtdXJ4[data-test="text-employerName"]')
                     company = company.get_attribute("innerHTML")
                     index_of_first_less_than = company.find("<")
@@ -127,6 +131,7 @@ class Bot:
                     pass
                 # location?
                 try:
+                    print("\rGetting offer location", end="")
                     location = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewqtkGPu[data-test="text-benefit"]')
                     parts = location.get_attribute("innerHTML").split(", ")
                     if len(parts) > 1:
@@ -134,6 +139,7 @@ class Bot:
                     else:
                         inner_data[2] = location.get_attribute("innerHTML")
                 except NoSuchElementException:
+                    print("\rGetting offer location after exeption", end="")
                     location = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewUIYWmu[data-test="text-benefit"]')
                     parts = location.get_attribute("innerHTML").split(", ")
                     if len(parts) > 1:
@@ -143,12 +149,14 @@ class Bot:
                     pass
                 # management_level?
                 try:
+                    print("\rGetting offer management_level", end="")
                     management_level = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-employment-type-name-text"]')
                     inner_data[3] = management_level.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # salary?
                 try:
+                    print("\rGetting offer salary", end="")
                     salary = self.bot.find_element(By.CSS_SELECTOR, "strong[data-test='text-earningAmount']")
                     salary_from = salary.find_element(By.CSS_SELECTOR, 'span[data-test="text-earningAmountValueFrom"]')
                     salary_to = salary.find_element(By.CSS_SELECTOR, 'span[data-test="text-earningAmountValueTo"]')
@@ -161,30 +169,35 @@ class Bot:
                     pass 
                 # tryb_pracy?
                 try:
+                    print("\rGetting offer tryb_pracy", end="")
                     tryb_pracy = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-modes-text"]')
                     inner_data[5] = tryb_pracy.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # etat?
                 try:
+                    print("\rGetting offer etat", end="")
                     etat = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-schedule-text"]')
                     inner_data[6] = etat.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # kontrakt?
                 try:
+                    print("\rGetting offer kontrakt", end="")
                     kontrakt = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-contracts-text"]')
                     inner_data[7] = kontrakt.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # specjalizacja?
                 try:
+                    print("\rGetting offer specjalizacja", end="")
                     specjalizacja = self.bot.find_element(By.CSS_SELECTOR, 'span.offer-viewPFKc0t')
                     inner_data[8] = specjalizacja.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
                 # technologie_wymagane?
                 try:
+                    print("\rGetting offer technologie_wymagane", end="")
                     div_wymagane = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="technologies-expected-1"][data-test="section-technologies-expected"]')
                     lista = div_wymagane.find_element(By.CSS_SELECTOR, "[class^='offer-viewEX0Eq-']")
                     li_elements = lista.find_elements(By.TAG_NAME, 'li')
@@ -198,6 +211,7 @@ class Bot:
                     pass
                 # technologie mile widziane?
                 try:
+                    print("\rGetting offer technologie mile widziane", end="")
                     div_optional = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="technologies-optional-1"][data-test="section-technologies-optional"]')
                     lista = div_optional.find_element(By.CSS_SELECTOR, "[class^='offer-viewEX0Eq-']")
                     li_elements = lista.find_elements(By.TAG_NAME, 'li')
@@ -212,6 +226,7 @@ class Bot:
                 # doswiadczenie? sucks but kinda works
                 # studia/wykrztalcenie? :C
                 try:
+                    print("\rGetting offer doswiadczenie", end="")
                     div_doswiadczenie = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="requirements-expected-1"][data-test="section-requirements-expected"]')
                     lista = div_doswiadczenie.find_element(By.CSS_SELECTOR, '[class^="offer-view6lWuAT"]')
                     li_elements = lista.find_elements(By.TAG_NAME, 'li')
@@ -244,6 +259,7 @@ class Bot:
             WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
             self.bot.execute_script("return document.readyState")
         except:
+            print("\rGoint to next site exeption", end="")
             if(self.retry == False):
                 self.retry = True
                 self.current_site -= 1

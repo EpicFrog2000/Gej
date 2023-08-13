@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Site</title>
+    <title>Data from it.pracuj.pl site</title>
     <?php include 'db_operations.php';?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
@@ -56,9 +57,36 @@
     </div>
     <div class="his">
         <h1 style="text-align: center;margin: 0;padding: 0;">Historic data</h1>
-        wykresiki jakies tam gowno kurwaaaaa
-    </div>
+        <div class="wykresy">
+            <div class="wykres">
+                <h2 style="text-align: center;">HISTORIC ILOSC OFERT</h2>
+                <canvas id="count_chart"></canvas>
+            </div>
+            <hr>
+            <div class="wykres">
+                <h2 style="text-align: center;">HISTORIC ETAT</h2>
+                <canvas id="historic_etat_chart"></canvas>
+            </div>
+            <hr>
+            <div class="wykres">
+                <h2 style="text-align: center;">HISTORIC WORK TYPE</h2>
+                <canvas id="work_type_etat_chart"></canvas>
+            </div>
+            <hr>
+            <div class="wykres">
+                <h2 style="text-align: center;">HISTORIC KONTRAKT</h2>
+                <canvas id="kontrakt_chart"></canvas>
+            </div>
+            <hr>
+            <div class="wykres">
+                <h2 style="text-align: center;">HISTORIC MANAGEMENT LEVEL</h2>
+                <canvas id="management_level_chart"></canvas>
+            </div>
+            <hr>
+            <script src="charts.js"></script>
 
+        </div>
+    </div>
 </body>
 </html>
 <?php

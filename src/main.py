@@ -12,7 +12,6 @@ while numer_stron_sesji == 0:
     bot.click_button_acc()
     numer_stron_sesji = bot.get_all_sites_nums()
 
-
 #print("title, company, location, management_level, salary_from, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA], doswiadczenie") #Will be more data later
 while int(bot.current_site) <= int(numer_stron_sesji):
     bot.get_data(numer_stron_sesji)
