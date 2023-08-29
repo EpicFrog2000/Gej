@@ -2,9 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 import html
 import re
+
 
 key_words_doswiadczenie = {
 "doświadczenia",
@@ -12,8 +14,9 @@ key_words_doswiadczenie = {
 "experience",
 }
 
+
 def extract_number(input_string):
-    pattern = r'\d+'
+    pattern = r'\s(\d+)\s'
     match = re.search(pattern, input_string)
     if match:
         return match.group()
@@ -32,16 +35,21 @@ class Bot:
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
         options.add_argument('--window-size=1920x1080')
-        #options.add_argument("--incognito")
-        #options.add_argument("pageLoadStrategy=eager")
+        options.add_argument('log-level=3')
+        options.add_argument("--incognito")
+        options.add_argument("pageLoadStrategy=eager")
+        options.add_argument("--disable-web-security")
+        options.add_argument("--disable-features=NetworkService")
         self.bot = webdriver.Chrome(options=options)
         self.current_site = 1
         url = 'https://it.pracuj.pl/?pn=' + str(self.current_site)
         self.bot.get(url)
+        self.bot.maximize_window()
         self.bot.execute_script("return document.readyState")
         self.linki_do_oferty = []
         self.dane_oferty = []
         self.retry = False
+        self.mode = 0 # 0 is it.pracuj.pl and 1 is it.pracuj.pl/praca, it is decided in get_all_sites_nums()
            
     def click_button_acc(self):
         print("\rClicking cookies button", end="")
@@ -64,61 +72,84 @@ class Bot:
             numer_stron_sesji = link_element.get_attribute("innerHTML")
             return int(numer_stron_sesji)
         except Exception as e:
-            print("\rError occurred while getting the number of pages")
-            self.get_all_sites_nums()
-            pass
+            div = WebDriverWait(self.bot, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-test='job-offers-bottom-pagination']")))
+            button = div.find_element(By.CSS_SELECTOR, "button[data-test^='bottom-pagination-button-page-']:not([data-test^='bottom-pagination-button-page-0']):not([data-test^='bottom-pagination-button-page-1']):not([data-test^='bottom-pagination-button-page-2']):not([data-test^='bottom-pagination-button-page-3']):not([data-test^='bottom-pagination-button-page-4'])")
+            numer_stron_sesji = button.text
+            self.mode = 1
+            return int(numer_stron_sesji)
     
-    # Pobieranie danych na temat ofert
+    # Pobieranie danych na temat ofert z it.pracuj.pl (nie z it.pracuj.pl/praca)
     def get_data(self,numer_stron_sesji):
         print("\rGetting data", end="")
         self.dane_oferty.clear()
-        oferty = self.bot.find_elements(By.CSS_SELECTOR, 'div.ContentBoxstyles__Wrapper-sc-11jmnka-0.jevXWE.JobOfferstyles__ContentBoxWrapper-sc-1rq6ue2-0')
-        self.id_oferty = 0
-        self.linki_do_oferty = [''] * len(oferty)
-        print("\rGetting offer links", end="")
-        for oferta in oferty:
-            # Pobierz linki ofert
-            unique_links = set()
-            try:
-                button = oferta.find_element(By.CLASS_NAME, 'JobOfferstyles__TitleButton-sc-1rq6ue2-5.HPWqN')
-                button.click()
-                href_element = oferta.find_element(By.CLASS_NAME, 'OfferLocationsListstyles__LocationsItemLink-sc-b1eixg-2.ZUWyH')
-                href = href_element.get_attribute("href")
-                if href not in unique_links:
-                    self.linki_do_oferty[self.id_oferty] = href
-                    unique_links.add(href)
-            except NoSuchElementException:
-                offer_link_element = oferta.find_element(By.CSS_SELECTOR, 'a[data-test="offer-link"]')
+        if(self.mode == 0):
+            oferty = self.bot.find_elements(By.CSS_SELECTOR, 'div.ContentBoxstyles__Wrapper-sc-11jmnka-0.jevXWE.JobOfferstyles__ContentBoxWrapper-sc-1rq6ue2-0')
+            self.id_oferty = 0
+            self.linki_do_oferty = [''] * len(oferty)
+            print("\rGetting offer links", end="")
+            for oferta in oferty:
+                # Pobierz linki ofert
+                unique_links = set()
+                try:
+                    button = oferta.find_element(By.CLASS_NAME, 'JobOfferstyles__TitleButton-sc-1rq6ue2-5.HPWqN')
+                    button.click()
+                    href_element = oferta.find_element(By.CLASS_NAME, 'OfferLocationsListstyles__LocationsItemLink-sc-b1eixg-2.ZUWyH')
+                    href = href_element.get_attribute("href")
+                    if href not in unique_links:
+                        self.linki_do_oferty[self.id_oferty] = href
+                        unique_links.add(href)
+                except NoSuchElementException:
+                    offer_link_element = oferta.find_element(By.CSS_SELECTOR, 'a[data-test="offer-link"]')
+                    link_text = offer_link_element.get_attribute("href")
+                    if link_text and link_text not in unique_links:
+                        self.linki_do_oferty[self.id_oferty] = link_text
+                        unique_links.add(link_text)
+                self.id_oferty += 1
+            self.id_oferty = 0
+        else:
+            
+            oferty = self.bot.find_elements(By.CSS_SELECTOR, "div.listing-it_bp811tr.listing-it_po9665q[data-test='default-offer']")
+            self.id_oferty = 0
+            self.linki_do_oferty = [''] * len(oferty)
+            print("\rGetting offer links", end="")
+            for oferta in oferty:
+                unique_links = set()
+                location = oferta.get_attribute("data-test-location")
+                if location == "multiple":
+                    oferta.click()
+                offer_link_element = oferta.find_element(By.CSS_SELECTOR, "a[data-test='link-offer']")
                 link_text = offer_link_element.get_attribute("href")
                 if link_text and link_text not in unique_links:
-                    self.linki_do_oferty[self.id_oferty] = link_text
-                    unique_links.add(link_text)
-            self.id_oferty += 1
-        self.id_oferty = 0
-
+                        self.linki_do_oferty[self.id_oferty] = link_text
+                        unique_links.add(link_text)
+                self.id_oferty += 1
+            self.id_oferty = 0
+                
         # Pobierz dane z linków do ofert
         print("\rStart gathering data from offers", end="")
         total_offers = len(self.linki_do_oferty)
 
         for index, oferta in enumerate(self.linki_do_oferty, start=1):
-            progress_msg = f"\rGetting data {index} / {total_offers}, {str(oferta)}               "
-            print(f"\r{progress_msg}", end="")
+            print("\r\033[K", end='', flush=True)
+            msg = f"\rGetting data {index} / {total_offers}, {str(oferta)}"
+            print(msg, end='', flush=True)
             if oferta != '':
                 try:
-                    print("\rGetting offer site", end="")
                     self.bot.get(str(oferta))
                     WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.ID, "kansas-offerview")))
+                    print("\r\033[K", end='', flush=True)
+                    print(f"\rGetting offer site   ")
                 except:
                     continue
                 inner_data = [''] * 14
                 # getting data
                 # title?
                 try:
-                    print("\rGetting offer title", end="")
+                    print("rGetting offer title", end="")
                     title = self.bot.find_element(By.CSS_SELECTOR, 'h1.offer-viewkHIhn3[data-test="text-positionName"][data-scroll-id="job-title"]')
                     inner_data[0] = title.get_attribute("innerHTML")
                 except NoSuchElementException:
-                    pass
+                    continue
                 # company?
                 try:
                     print("\rGetting offer company", end="")
@@ -255,8 +286,10 @@ class Bot:
             self.retry = False
             print("\rGoint to next site", end="")
             self.current_site += 1
-            self.bot.get("https://it.pracuj.pl/?pn=" + str(self.current_site))
-            WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
+            if(self.mode ==0):
+                self.bot.get("https://it.pracuj.pl/?pn=" + str(self.current_site))
+            else:
+                self.bot.get("https://it.pracuj.pl/praca?pn=" + str(self.current_site))
             self.bot.execute_script("return document.readyState")
         except:
             print("\rGoint to next site exeption", end="")
