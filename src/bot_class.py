@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementClickInterceptedException
 import html
 import re
 
@@ -32,20 +33,37 @@ class Bot:
     def __init__(self):
         print("\rInitiation", end="")
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
+        options.add_argument('--headless=new')
         options.add_argument('--disable-gpu')
         options.add_argument('--window-size=1920x1080')
         options.add_argument('log-level=3')
         options.add_argument("--incognito")
-        options.add_argument("pageLoadStrategy=eager")
+        options.add_argument("--pageLoadStrategy=eager") #changed too
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-features=NetworkService")
+        
+        options.add_argument('--disable-extensions')
+        options.add_argument('--disable-infobars')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-browser-side-navigation')
+        options.add_argument('--disable-features=VizDisplayCompositor')
+        options.add_argument('--disable-software-rasterizer')
+        options.add_argument('--disable-default-apps')
+        options.add_argument('--no-sandbox')
+        
+        options.add_argument('--disable-remote-fonts')
+        options.add_argument('--disable-popup-blocking')
+        options.add_argument('--disable-renderer-backgrounding')
+        options.add_argument('--disable-component-extensions-with-background-pages')
+        
+        options.add_argument("--disable-javascript")
+
+        
         self.bot = webdriver.Chrome(options=options)
         self.current_site = 1
         url = 'https://it.pracuj.pl/?pn=' + str(self.current_site)
         self.bot.get(url)
         self.bot.maximize_window()
-        self.bot.execute_script("return document.readyState")
         self.linki_do_oferty = []
         self.dane_oferty = []
         self.retry = False
@@ -73,8 +91,8 @@ class Bot:
             return int(numer_stron_sesji)
         except Exception as e:
             div = WebDriverWait(self.bot, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-test='job-offers-bottom-pagination']")))
-            button = div.find_element(By.CSS_SELECTOR, "button[data-test^='bottom-pagination-button-page-']:not([data-test^='bottom-pagination-button-page-0']):not([data-test^='bottom-pagination-button-page-1']):not([data-test^='bottom-pagination-button-page-2']):not([data-test^='bottom-pagination-button-page-3']):not([data-test^='bottom-pagination-button-page-4'])")
-            numer_stron_sesji = button.text
+            second_last_button = div.find_element(By.CSS_SELECTOR, "button[data-test^='bottom-pagination-button-page-']:nth-last-child(2)")
+            numer_stron_sesji = second_last_button.text
             self.mode = 1
             return int(numer_stron_sesji)
     
@@ -114,15 +132,24 @@ class Bot:
             print("\rGetting offer links", end="")
             for oferta in oferty:
                 unique_links = set()
-                location = oferta.get_attribute("data-test-location")
-                if location == "multiple":
-                    oferta.click()
-                offer_link_element = oferta.find_element(By.CSS_SELECTOR, "a[data-test='link-offer']")
-                link_text = offer_link_element.get_attribute("href")
-                if link_text and link_text not in unique_links:
+                try:
+                    location = oferta.get_attribute("data-test-location")
+                    if location == "multiple":
+                        # Wait for the element to be clickable, and then click it
+                        oferta.click()
+
+                    offer_link_element = oferta.find_element(By.CSS_SELECTOR, "a[data-test='link-offer']")
+                    link_text = offer_link_element.get_attribute("href")
+                    if link_text and link_text not in unique_links:
                         self.linki_do_oferty[self.id_oferty] = link_text
                         unique_links.add(link_text)
-                self.id_oferty += 1
+                    self.id_oferty += 1
+                except ElementClickInterceptedException:
+                    # Handle the ElementClickInterceptedException here, such as waiting for the overlaying element to disappear or moving away
+                    pass
+                except Exception as e:
+                    # Handle other exceptions here if needed
+                    pass
             self.id_oferty = 0
                 
         # Pobierz dane z linków do ofert
@@ -132,20 +159,20 @@ class Bot:
         for index, oferta in enumerate(self.linki_do_oferty, start=1):
             print("\r\033[K", end='', flush=True)
             msg = f"\rGetting data {index} / {total_offers}, {str(oferta)}"
-            print(msg, end='', flush=True)
+            print(msg, end='')
             if oferta != '':
                 try:
                     self.bot.get(str(oferta))
                     WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.ID, "kansas-offerview")))
-                    print("\r\033[K", end='', flush=True)
-                    print(f"\rGetting offer site   ")
+                    print("\r\033[K", end='')
+                    print(f"\rGetting offer site   ", end="")
                 except:
                     continue
                 inner_data = [''] * 14
                 # getting data
                 # title?
                 try:
-                    print("rGetting offer title", end="")
+                    print("\rGetting offer title", end="")
                     title = self.bot.find_element(By.CSS_SELECTOR, 'h1.offer-viewkHIhn3[data-test="text-positionName"][data-scroll-id="job-title"]')
                     inner_data[0] = title.get_attribute("innerHTML")
                 except NoSuchElementException:
@@ -284,15 +311,14 @@ class Bot:
     def go_to_next_site(self):
         try:
             self.retry = False
-            print("\rGoint to next site", end="")
+            print("\rGoing to next site", end="")
             self.current_site += 1
             if(self.mode ==0):
                 self.bot.get("https://it.pracuj.pl/?pn=" + str(self.current_site))
             else:
                 self.bot.get("https://it.pracuj.pl/praca?pn=" + str(self.current_site))
-            self.bot.execute_script("return document.readyState")
         except:
-            print("\rGoint to next site exeption", end="")
+            print("\rGoing to next site exeption", end="")
             if(self.retry == False):
                 self.retry = True
                 self.current_site -= 1

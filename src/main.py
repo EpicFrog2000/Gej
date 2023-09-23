@@ -1,3 +1,5 @@
+
+
 import db_operations
 import bot_class
 import os
@@ -44,4 +46,4 @@ while int(bot.current_site) <= int(numer_stron_sesji):
 db_operations.insert_to_historic_data()
 #TODO:
 # add mysql to docker
-# visualize data
+# visualize data    
