@@ -18,6 +18,6 @@ to see website go to ...\website\frontend\index.php (there wont be any data for 
 
 ## TODO:
 1. Analyze data more
-2. Expand
-3. Make better website for more scalability
+2. Expand data gathering for other websites
+3. Make better website for displaying gathered data
 4. At least host DB with data for everyone to see :)
