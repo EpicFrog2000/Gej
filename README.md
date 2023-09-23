@@ -10,22 +10,14 @@ Clone the repo
    ```
 test_data_job_market.sql is used to import data base in mysql
 
-To build this project using Docker engine try:
-```sh
-docker build -t webscrape .
-```
-To run a container: 
-```sh
-docker run webscrape
-```
+to see website go to ...\website\frontend\index.php (there wont be any data for now)
 
-# Currently using:</br>
+# Currently using for gathering data:</br>
 -Webdriver</br>
 -Selenium</br>
 
 ## TODO: </br>
-1. Finish gathering data script
-2. Store and organise data
-3. Analyze data
-4. Visualize data
-5. Expand
+1. Analyze data more
+2. Expand
+3. Make better website for more scalability
+4. At least host DB with data for everyone to see :)
