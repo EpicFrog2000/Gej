@@ -1,6 +1,6 @@
 ## About The Project
 
-By far, this app is getting data only from it.pracuj.pl.
+By far, this app is getting data only from it.pracuj.pl storing this data in mysql database and displays this data on website.
 
 ### Installation
 
@@ -10,22 +10,14 @@ Clone the repo
    ```
 test_data_job_market.sql is used to import data base in mysql
 
-To build this project using Docker engine try:
-```sh
-docker build -t webscrape .
-```
-To run a container: 
-```sh
-docker run webscrape
-```
+to see website go to ...\website\frontend\index.php (there wont be any data for now)
 
-# Currently using:</br>
+# Currently using for gathering data:
 -Webdriver</br>
 -Selenium</br>
 
-## TODO: </br>
-1. Finish gathering data script
-2. Store and organise data
-3. Analyze data
-4. Visualize data
-5. Expand
+## TODO:
+1. Analyze data more
+2. Expand data gathering for other websites
+3. Make better website for displaying gathered data
+4. At least host DB with data for everyone to see :)
