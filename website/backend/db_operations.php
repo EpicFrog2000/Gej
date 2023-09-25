@@ -229,7 +229,9 @@ function get_last_date($conn){
 $sql = "SELECT date FROM `data` ORDER BY DESC LIMIT BY 1";
 
 }
-
-
-
+// maybe add:
+// top 5 najczesciej wystepujacych firm danego dnia
+// może coś ogarnąć z salary
 ?>
+
+

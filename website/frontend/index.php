@@ -11,29 +11,18 @@
 <body loading="lazy">
 
     <div class="top_menu">
-        <ul class = top_menu_list>
-            <li class="menu_list_option"> <a href="about.php" style="color: rgb(200, 200, 200);"> O mnie </a> </li>
-            <li class="menu_list_option">
+
+        <div class="menu_option"> <a href="main.php" style="color: rgb(200, 200, 200);"> GŁÓWNA STRONA </a></div>
+        <div class="menu_option">
             <details>
-              <summary>
-              ⬇️Dane ze stronek
-              </summary>
-              <a href="project1.php" class="option"> Projekt 1 </a></br>
-              <a href="project2.php" class="option"> Projekt 2 </a></br>
-              <a href="project3.php" class="option"> Projekt 3 </a>
-
+              <summary>DANE ZE STRONEK</summary>
+              <a href="project1.php" class="option"> dane z strony 1 </a></br>
+              <a href="project2.php" class="option"> dane z strony 2 </a></br>
+              <a href="project3.php" class="option"> dane z strony 3 </a></br>
             </details>
-                
-                
-            </li>
-            <li class="menu_list_option"> <a href="otherP.php" style="color: rgb(200, 200, 200);"> inne projekty </a> </li>
-            <li class="menu_list_option"> <a href="main.php" style="color: rgb(200, 200, 200);"> glowna </a> </li>
-        </ul>
-        <!--glowna-->
-        <!--Lista danych ze stron-->
-        <!--inne projekty-->
-        <!--O mnie-->
-
+        </div>
+        <div class="menu_option"> <a href="otherP.php" style="color: rgb(200, 200, 200);"> INNE PROJEKTY </a> </div>
+        <div class="menu_option"> <a href="about.php" style="color: rgb(200, 200, 200);"> O MNIE </a> </div>
     </div>
 
     <div class="main">
@@ -129,13 +118,23 @@
                     <hr>
                     
                     <div class="wykres">
+                        <!-- Here place like a slider to update a range of chart's data -->
+                        <h4 style="padding: 0px; margin: 0px;";> Wpisz zakres ile dni wstecz chcesz widzieć na wykresie ponizej i kliknij zmień (F5 resetuje)</h4>
+                        <input type="number" id="rangeInput_hwt" style="width: 35px;" min="1" max="60">
+                        <input type="button" id="updateButton_hwt" value="zmień">
+                        <!-- For now works like shit but still works :D -->
                         <h2 style="text-align: center;">HISTORIC WYMAGANE TECHNOLOGIE</h2>
                         <canvas id="historic_technologie_wymagane"></canvas>
                     </div>
                     <hr>
                     <div class="wykres">
+                        <!-- Here place like a slider to update a range of chart's data -->
+                        <h4 style="padding: 0px; margin: 0px;";> Wpisz zakres ile dni wstecz chcesz widzieć na wykresie ponizej i kliknij zmień (F5 resetuje)</h4>
+                        <input type="number" id="rangeInput_hmwt" style="width: 35px;" min="1" max="60">
+                        <input type="button" id="updateButton_hmwt" value="zmień">
+                        <!-- For now works like shit but still works :D -->
                         <h2 style="text-align: center;">HISTORIC MILE WIDZIANE TECHNOLOGIE</h2>
-                        <canvas id="historic_technologie_mile_widziane"></canvas>
+                        <canvas id="historic_technologie_mile_widziane"> </canvas>
                     </div>
                     <hr>
 
@@ -153,11 +152,38 @@
 
             <div class="wiadomosc">
                 <h2 style="text-align: center;">Wyslij wiadomosc prosto do mnie</h2>
-                <form id="messageForm" action="../backend/send_msg.php" method="post">
+                <form id="messageForm" method="POST">
                     <textarea name="message" id="message" cols="40" rows="5" required></textarea>
-                    <button type="submit" value="Wyslij" id="clk" onclick="submitForm();">Wyślij</button>
+                    <input type="submit" value="Wyslij">
                 </form>
                 <iframe name="messageFrame" style="display: none;"></iframe>
+                <script>
+                    document.getElementById("messageForm").addEventListener("submit", function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+                        // Serialize the form data
+                        var formData = new FormData(document.getElementById("messageForm"));
+                        // Send an AJAX POST request to send_msg.php
+                        fetch("../backend/send_msg.php", {
+                            method: "POST",
+                            body: formData
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Handle a successful response (e.g., display a success message)
+                                console.log("Email sent successfully!");
+                            } else {
+                                // Handle an error response (e.g., display an error message)
+                                console.error("Email sending failed.");
+                            }
+                        })
+                        .catch(error => {
+                            // Handle network or other errors
+                            console.error("Error: " + error);
+                        });
+                    });
+                    // IDK WHY DOES NOT WORK FIX LATER
+                </script>
+                
             </div>
         </div>
     </div>

@@ -3,7 +3,6 @@ fetch('../backend/data_for_charts.php')
   .then(response => response.json())
   .then(data => {
     var etat_data = data.historic_etat;
-    console.log(data.historic_etat);
     var labels = etat_data.map(item => item.date);
     var pe = etat_data.map(item => parseInt(item['pełny etat']));
     var ce = etat_data.map(item => parseInt(item['część etatu']));
@@ -287,7 +286,7 @@ function addDataset(chart, label, data) {
   // Update the chart
   chart.update();
 } 
-
+var historic_technologie_wymagane_chart;
 fetch('../backend/data_for_charts.php')
   .then(response => response.json())
   .then(data => {
@@ -304,13 +303,13 @@ fetch('../backend/data_for_charts.php')
       datasets: []
     };
 
-    var historic_technologie_wymagane_chart = new Chart(ctx6, {
+    historic_technologie_wymagane_chart = new Chart(ctx6, {
       type: 'bar',
       data: initialData,
       options: {
         responsive: true,
         interaction: {
-          intersect: false,
+          intersect: 'x',
         },
         scales: {
           x: {
@@ -345,7 +344,7 @@ for (const element of technologies) {
 });
 
 var ctx7 = document.getElementById('historic_technologie_mile_widziane').getContext('2d');
-
+var historic_technologie_mile_widziane_chart;
 fetch('../backend/data_for_charts.php')
   .then(response => response.json())
   .then(data => {
@@ -362,22 +361,14 @@ fetch('../backend/data_for_charts.php')
       datasets: []
     };
 
-    var historic_technologie_mile_widziane_chart = new Chart(ctx7, {
+    historic_technologie_mile_widziane_chart = new Chart(ctx7, {
       type: 'bar',
       data: initialData,
       options: {
         responsive: true,
         interaction: {
-          intersect: false,
+          intersect: 'x',
         },
-        scales: {
-          x: {
-            stacked: true,
-          },
-          y: {
-            stacked: true
-          }
-        }
       }
     });
     
@@ -401,3 +392,36 @@ for (const element of technologies) {
 .catch(error => {
   console.error('Error fetching data:', error);
 });
+
+var updateButton = document.getElementById('updateButton_hmwt');
+
+updateButton.addEventListener('click', function() {
+    var inputElement = document.getElementById('rangeInput_hmwt');
+    var inputValue = inputElement.valueAsNumber;
+    updateChartWithNewRange(inputValue, historic_technologie_mile_widziane_chart);
+});
+
+var updateButton = document.getElementById('updateButton_hwt');
+
+updateButton.addEventListener('click', function() {
+    var inputElement = document.getElementById('rangeInput_hwt');
+    var inputValue = inputElement.valueAsNumber;
+    updateChartWithNewRange(inputValue, historic_technologie_wymagane_chart);
+});
+
+
+function updateChartWithNewRange(Number, chart) {
+  var data = chart.data.datasets[0].data;
+  var labels = chart.data.labels;
+
+  // Get the last 5 data points and labels
+  var lastData = data.slice(-Number);
+  var lastLabels = labels.slice(-Number);
+
+  // Update the data and labels arrays
+  chart.data.datasets[0].data = lastData;
+  chart.data.labels = lastLabels;
+
+  // Redraw the chart
+  chart.update();
+}

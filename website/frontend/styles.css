@@ -34,37 +34,31 @@ body::-webkit-scrollbar {
     background-color: rgba(4, 22, 34, 0.7);
 }
 
-.top_menu_list{
+.menu_option{
     height: 100%;
-    margin: 0;
-    padding: 0;
+    float: left;
+    width: 25%;
+    text-align: center;
+    margin: auto;
+    text-align: center;
+    padding: 30px 0;
+    font-size:larger;
+    font-weight: bolder;
 }
 
-.menu_list_option{
-    list-style: none;
-    height: max-content;
-    width: 20%;
-    float: right;
-    padding-top: 2%;
-    
-}
 
 details {
     user-select: none;
 }
 
-details>summary span.icon {
-    width: 24px;
-    height: 24px;
-    transition: all 0.3s;
-    margin-left: auto;
-    
+details>summary{
+    transition: all 0s;
+    margin: auto;
 }
 
 summary {
-    display: flex;
+    display:block;
     cursor: pointer;
-    
 }
 
 summary::-webkit-details-marker {
@@ -76,8 +70,9 @@ summary::-webkit-details-marker {
     background-color: rgba(4, 22, 34, 0.7);
     margin: 0;
     padding: 0;
-    width: 80%;
+    width: 100%;
 }
+
 
 
 .main{
@@ -259,6 +254,8 @@ textarea{
     background-color: rgba(4, 22, 34, 0.7);
     border: 0px;
     color:  rgb(200, 200, 200);
+    max-width: 330px;
+    max-height: 180px;
 }
 
 button{
