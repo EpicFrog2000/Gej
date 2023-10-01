@@ -125,7 +125,6 @@ class Bot:
                 self.id_oferty += 1
             self.id_oferty = 0
         else:
-            
             oferty = self.bot.find_elements(By.CSS_SELECTOR, "div.listing-it_bp811tr.listing-it_po9665q[data-test='default-offer']")
             self.id_oferty = 0
             self.linki_do_oferty = [''] * len(oferty)

@@ -1,7 +1,7 @@
 
 
-import db_operations
-import bot_class
+from ..modules import db_operations
+from ..modules import bot_class
 import os
 
 numer_stron_sesji = 0

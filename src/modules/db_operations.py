@@ -1,5 +1,5 @@
 import mysql.connector
-import key_words
+import key_words_for_pracujpl
 import datetime
 
 mydb = mysql.connector.connect(
