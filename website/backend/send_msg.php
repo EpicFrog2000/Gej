@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $mailer->Host = 'smtp.wp.pl'; // SMTP server address
         $mailer->SMTPAuth = true;
         $mailer->Username = 'strona_internetowa@wp.pl'; // Your WP.pl email address
-        $mailer->Password = 'haslonastrone123'; // Your WP.pl email password
+        $mailer->Password = '###'; // Your WP.pl email password
         $mailer->SMTPSecure = 'tls';
         $mailer->Port = 587;
         
