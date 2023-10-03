@@ -1,5 +1,21 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import re
+import key_words_for_indeed
+
+def extract_number(input_string):
+    pattern = r'\s(\d+)\s'
+    match = re.search(pattern, input_string)
+    if match:
+        return match.group()
+    else:
+        return None
+
+def extract_numeric_value(text):
+    # Remove any non-numeric characters and spaces from the text
+    numeric_text = ''.join(filter(str.isdigit, text))
+    return int(numeric_text)
+
 
 class Bot:
     def __init__(self):
@@ -101,8 +117,69 @@ class Bot:
             except:
                 pass
             
+            try:#inner_list[4],#salary
+                salary_element = oferta.find_element(By.CLASS_NAME, 'css-tvvxwd.ecydgvn1')
+                parts = salary_element.get_attribute("innerHTML").split("-")
+                if len(parts) > 1:
+                    inner_data[4] = extract_numeric_value(parts[0]) # this is from and extract_numeric_value(parts[1]) would be to
+                else:
+                    inner_data[4] = salary_element.get_attribute("innerHTML")
+            except:
+                pass
+            
+            try:#inner_list[5],#tryb_pracy
+                all_text = oferta.get_attribute("innerHTML")
+                found = False
+                for phrase in key_words_for_indeed.key_words_work_type:
+                    if phrase in all_text:
+                        found = True
+                        inner_data[5] = phrase
+                        break
+                found = False
+            except:
+                pass
+            
+            try:#inner_list[6],#etat
+                if oferta.find_element_by_id("salaryInfoAndJobType"):
+                    element = oferta.find_element_by_id("salaryInfoAndJobType")
+                    all_text = element.get_attribute("innerHTML")
+                    found = False
+                    for phrase in key_words_for_indeed.key_words_etat:
+                        if phrase in all_text:
+                            found = True
+                            inner_data[6] = phrase
+                            break
+                    found = False
+                elif oferta.find_element_by_id("jobDetailsSection"):
+                    element = oferta.find_element_by_id("jobDetailsSection")
+                    all_text = element.get_attribute("innerHTML")
+                    found = False
+                    for phrase in key_words_for_indeed.key_words_etat:
+                        if phrase in all_text:
+                            found = True
+                            inner_data[6] = phrase
+                            break
+                    found = False
+                else:
+                    all_text = oferta.get_attribute("innerHTML")
+                    found = False
+                    for phrase in key_words_for_indeed.key_words_etat:
+                        if phrase in all_text:
+                            found = True
+                            inner_data[6] = phrase
+                            break
+                    found = False
+                    
+            except:
+                pass
+            
+            #try: # inner_list[7],#kontrakt
+            #                               # NOT ENOUGH INFO ON WEBSITE
+            #except:
+            #    pass
+            
             try: #inner_list[3],#management_level - Mid	systent	Junior	Senior	ekspert	team manager	menedżer	praktykant / stażysta	dyrektor ITP
-                # chceck if wherever is any of above phrases or something
+                # chceck if wherever of inner_list is any of above phrases or something
                 
                 
             except:
@@ -114,10 +191,10 @@ class Bot:
             
                 #maybe these:
             
-            #inner_list[4],#salary
-            #inner_list[5],#tryb_pracy 
-            #inner_list[6],#etat
-            #inner_list[7],#kontrakt
+            
+            
+            
+            
             #inner_list[8],#specjalizacja
             #tuple(inner_list[9]),# technologie_wymagane (converted to a tuple)
             #tuple(inner_list[10]),# technologie_mile_widziane (converted to a tuple)
