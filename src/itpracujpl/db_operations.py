@@ -8,8 +8,9 @@ mydb = mysql.connector.connect(
     database="test_data_job_market"
 )
 
-def translate_and_filter(lista):
-    translations = {
+# Czasem oferta jest po angielsku więc tłumaczę wszystkie pobrane dane na język polski dla konsystencji i jakości
+def tłumacz_i_filtruj(lista):
+    tłumaczenie = {
         "full-time": "pełny etat",
         "part time": "część etatu",
         "dodatkowa / tymczasowa": "dodatkowa / tymczasowa",
@@ -29,20 +30,20 @@ def translate_and_filter(lista):
         "temporary staffing agreement": "umowa na zastępstwo",
         "contract for specific work": "umowa o dzieło",
     }
-    translated_list = []
+    przetłumaczona_lista = []
     for item in lista:
-        if item in translations:
-            translated_list.append(translations[item])
-        elif item not in translated_list:
-            translated_list.append(item)
-    return translated_list
+        if item in tłumaczenie:
+            przetłumaczona_lista.append(tłumaczenie[item])
+        elif item not in przetłumaczona_lista:
+            przetłumaczona_lista.append(item)
+    return przetłumaczona_lista
 
 
 def insert_data(data_list,start_id_offer):
     connection = mydb.cursor()
     id_offer = start_id_offer 
     for data_row in data_list:
-        #insert into main table
+        # insert into main table
         sql = "INSERT INTO data (title, company, location, salary, id, doswiadczenie) VALUES (%s,%s,%s,%s,%s,%s)"
         values = (data_row[0], data_row[1], data_row[2], data_row[4], id_offer, data_row[11])
         connection.execute(sql, values)
@@ -51,7 +52,7 @@ def insert_data(data_list,start_id_offer):
         lista_management_level = data_row[3].split(",")
         for item in lista_management_level:
             matches = [key for key in key_words_for_pracujpl.key_words_management_level if key in item]
-            matches = translate_and_filter(matches)
+            matches = tłumacz_i_filtruj(matches)
             for match in matches:
                 sql = "INSERT INTO  management_level (id, management_level) VALUES (%s,%s)"
                 values = (id_offer, match)
@@ -61,7 +62,7 @@ def insert_data(data_list,start_id_offer):
         lista_tryb_pracy = data_row[5].split(",")
         for item in lista_tryb_pracy:
             matches = [key for key in key_words_for_pracujpl.key_words_work_type if key in item]
-            matches = translate_and_filter(matches)
+            matches = tłumacz_i_filtruj(matches)
             for match in matches:
                 sql = "INSERT INTO work_type (id, work_type) VALUES (%s,%s)"
                 values = (id_offer, match)
@@ -71,7 +72,7 @@ def insert_data(data_list,start_id_offer):
         lista_etat = data_row[6].split(",")
         for item in lista_etat:
             matches = [key for key in key_words_for_pracujpl.key_words_etat if key in item]
-            matches = translate_and_filter(matches)
+            matches = tłumacz_i_filtruj(matches)
             for match in matches:
                 sql = "INSERT INTO etat (id, etat) VALUES (%s,%s)"
                 values = (id_offer, match)
@@ -81,7 +82,7 @@ def insert_data(data_list,start_id_offer):
         lista_kontrakt = data_row[7].split(",")
         for item in lista_kontrakt:
             matches = [key for key in key_words_for_pracujpl.key_words_kontrakt if key in item]
-            matches = translate_and_filter(matches)
+            matches = tłumacz_i_filtruj(matches)
             for match in matches:
                 sql = "INSERT INTO kontrakt (id, kontrakt) VALUES (%s,%s)"
                 values = (id_offer, match)
