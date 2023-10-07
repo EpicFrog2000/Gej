@@ -37,16 +37,17 @@ def translate_and_filter(lista):
             translated_list.append(item)
     return translated_list
 
+
 def insert_data(data_list,start_id_offer):
     connection = mydb.cursor()
     id_offer = start_id_offer 
     for data_row in data_list:
-        #insert into main
+        #insert into main table
         sql = "INSERT INTO data (title, company, location, salary, id, doswiadczenie) VALUES (%s,%s,%s,%s,%s,%s)"
         values = (data_row[0], data_row[1], data_row[2], data_row[4], id_offer, data_row[11])
         connection.execute(sql, values)
         mydb.commit()
-        # insert management_level
+        # insert into management_level table
         lista_management_level = data_row[3].split(",")
         for item in lista_management_level:
             matches = [key for key in key_words_for_pracujpl.key_words_management_level if key in item]
@@ -56,7 +57,7 @@ def insert_data(data_list,start_id_offer):
                 values = (id_offer, match)
                 connection.execute(sql, values)
                 mydb.commit()
-        # insert tryb_pracy
+        # insert into tryb_pracy table
         lista_tryb_pracy = data_row[5].split(",")
         for item in lista_tryb_pracy:
             matches = [key for key in key_words_for_pracujpl.key_words_work_type if key in item]
@@ -66,7 +67,7 @@ def insert_data(data_list,start_id_offer):
                 values = (id_offer, match)
                 connection.execute(sql, values)
                 mydb.commit()
-        # insert etat
+        # insert into etat table
         lista_etat = data_row[6].split(",")
         for item in lista_etat:
             matches = [key for key in key_words_for_pracujpl.key_words_etat if key in item]
@@ -76,7 +77,7 @@ def insert_data(data_list,start_id_offer):
                 values = (id_offer, match)
                 connection.execute(sql, values)
                 mydb.commit()
-        # insert kontrakt
+        # insert into kontrakt table
         lista_kontrakt = data_row[7].split(",")
         for item in lista_kontrakt:
             matches = [key for key in key_words_for_pracujpl.key_words_kontrakt if key in item]
@@ -86,20 +87,20 @@ def insert_data(data_list,start_id_offer):
                 values = (id_offer, match)
                 connection.execute(sql, values)
                 mydb.commit()
-        # insert specjalizacje
+        # insert into specjalizacje table
         lista_specjalizacja = data_row[8].split(",")
         for item in lista_specjalizacja:
             sql = "INSERT INTO specjalizacje (id, specjalizacja) VALUES (%s,%s)"
             values = (id_offer, item)
             connection.execute(sql, values)
             mydb.commit()
-        # insert technologie_wymagane
+        # insert into technologie_wymagane table
         for item in data_row[9]:
             sql = "INSERT INTO technologie_wymagane (id, technologia) VALUES (%s,%s)"
             values = (id_offer, item)
             connection.execute(sql, values)
             mydb.commit()
-        # insert technologie_mile_widziane
+        # insert into technologie_mile_widziane table
         for item in data_row[10]:
             sql = "INSERT INTO technologie_mile_widziane (id, technologia) VALUES (%s,%s)"
             values = (id_offer, item)
@@ -111,6 +112,7 @@ def insert_data(data_list,start_id_offer):
     connection.close()
     return id_offer
 
+# Wkłada dane do tabelek z danymi historycznymi
 def insert_to_historic_data():
     connection = mydb.cursor()
     todays_date = datetime.datetime.now()
@@ -140,7 +142,6 @@ def insert_to_historic_data():
     connection.execute(sql, val)
     mydb.commit()
 
-        
     connection.execute("SELECT kontrakt, COUNT(id) AS count FROM kontrakt WHERE kontrakt IN ('umowa o pracę', 'kontrakt B2B', 'umowa zlecenie', 'umowa o staż / praktyki', 'umowa o dzieło', 'umowa na zastępstwo') GROUP BY kontrakt ORDER  BY count DESC;")
     kontrakt_data = connection.fetchall()
     val=()
@@ -200,7 +201,8 @@ def insert_to_historic_data():
         
     connection.execute("INSERT INTO historic_location (location, count, date) SELECT location, COUNT(*) AS location_count, '"+str(todays_date)+"' AS date FROM `data` GROUP BY location ORDER BY location_count DESC LIMIT 20;")
     mydb.commit()
-        
+
+    #czyści dane z tabelek z danymi dziennymi
 def clear_tables():
     connection = mydb.cursor()
     tables_to_clear = [

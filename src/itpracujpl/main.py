@@ -6,15 +6,19 @@ import os
 def main():
     numer_stron_sesji = 0
     id_offer = 1
-
+    
+    # czyści dane aby przygotowac na dalsze działanie programu
     db_operations.clear_tables()
 
+    # Zrobione jest to po to aby upewnić się że mój świetny internet kiedyś w końcu załapie że próbuję cos załadować
     while numer_stron_sesji == 0:
         bot = bot_class.Bot()
         bot.click_button_acc()
         numer_stron_sesji = bot.get_all_sites_nums()
+        
+    #TODO Podziel program aby działał na większej ilości wątków w zależności od tego na jakim serwerze zostawie ten program
+    #     tzn. strony od 1-10 na jednym wątku 11-20 na drugim wątku itd.
 
-    #print("title, company, location, management_level, salary_from, tryb_pracy, etat, kontrakt, specjalizacja, technologie_wymagane[LISTA], technologie_mile_widziane[LISTA], doswiadczenie") #Will be more data later
     while int(bot.current_site) <= int(numer_stron_sesji):
         bot.get_data(numer_stron_sesji)
         formatted_list = []
@@ -37,6 +41,7 @@ def main():
             if formatted_item not in unique_items:
                 formatted_list.append(formatted_item)
                 unique_items.add(formatted_item)
+                
         #insert data to database
         id_offer = db_operations.insert_data(formatted_list, id_offer)
         os.system('cls')
@@ -44,9 +49,3 @@ def main():
         bot.go_to_next_site()
 
     db_operations.insert_to_historic_data()
-    #TODO:
-    # add mysql to docker
-    # visualize data
-    
-if __name__ == "__main__":
-    main()

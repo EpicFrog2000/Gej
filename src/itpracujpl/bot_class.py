@@ -2,12 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementClickInterceptedException
 import html
 import re
-
 
 key_words_doswiadczenie = {
 "doświadczenia",
@@ -16,6 +14,7 @@ key_words_doswiadczenie = {
 }
 
 
+# Obie funkcje były napisane jakiś czas temu, nie wiem dlaczego obie egzystują pomimo tego samogo przeznaczenia, nie ruszam bo nie pamiętam a działa :p (07.10.2023)
 def extract_number(input_string):
     pattern = r'\s(\d+)\s'
     match = re.search(pattern, input_string)
@@ -25,7 +24,6 @@ def extract_number(input_string):
         return None
 
 def extract_numeric_value(text):
-    # Remove any non-numeric characters and spaces from the text
     numeric_text = ''.join(filter(str.isdigit, text))
     return int(numeric_text)
 
@@ -38,10 +36,9 @@ class Bot:
         options.add_argument('--window-size=1920x1080')
         options.add_argument('log-level=3')
         options.add_argument("--incognito")
-        options.add_argument("--pageLoadStrategy=eager") #changed too
+        options.add_argument("--pageLoadStrategy=eager")
         options.add_argument("--disable-web-security")
         options.add_argument("--disable-features=NetworkService")
-        
         options.add_argument('--disable-extensions')
         options.add_argument('--disable-infobars')
         options.add_argument('--disable-dev-shm-usage')
@@ -50,15 +47,12 @@ class Bot:
         options.add_argument('--disable-software-rasterizer')
         options.add_argument('--disable-default-apps')
         options.add_argument('--no-sandbox')
-        
         options.add_argument('--disable-remote-fonts')
         options.add_argument('--disable-popup-blocking')
         options.add_argument('--disable-renderer-backgrounding')
         options.add_argument('--disable-component-extensions-with-background-pages')
-        
         options.add_argument("--disable-javascript")
 
-        
         self.bot = webdriver.Chrome(options=options)
         self.current_site = 1
         url = 'https://it.pracuj.pl/?pn=' + str(self.current_site)
@@ -67,8 +61,10 @@ class Bot:
         self.linki_do_oferty = []
         self.dane_oferty = []
         self.retry = False
+        # czasem ładuje się jedna domena a czasem druga więc są 2 skrypty na 2 różne domeny
         self.mode = 0 # 0 is it.pracuj.pl and 1 is it.pracuj.pl/praca, it is decided in get_all_sites_nums()
-           
+
+    # Kilka przycisk z akceptacją ciasteczek jeśli się pojawi
     def click_button_acc(self):
         print("\rClicking cookies button", end="")
         try:
@@ -77,25 +73,28 @@ class Bot:
         except NoSuchElementException as e:
             print(f"\rError occurred while clicking cookies button: {e}")
             pass
-        
+
     # Pobiera ile jest stron z ofertami
     def get_all_sites_nums(self):
         print("\rGetting nums of all sites", end="")
         try:
-            div = WebDriverWait(self.bot, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
-            ul_element = div.find_element(By.CSS_SELECTOR, 'ul.pagination')
-            li_elements = ul_element.find_elements(By.TAG_NAME, 'li')
-            last_item = li_elements[-2]
-            link_element = last_item.find_element(By.TAG_NAME, 'a')
-            numer_stron_sesji = link_element.get_attribute("innerHTML")
-            return int(numer_stron_sesji)
-        except Exception as e:
-            div = WebDriverWait(self.bot, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-test='job-offers-bottom-pagination']")))
-            second_last_button = div.find_element(By.CSS_SELECTOR, "button[data-test^='bottom-pagination-button-page-']:nth-last-child(2)")
-            numer_stron_sesji = second_last_button.text
-            self.mode = 1
-            return int(numer_stron_sesji)
-    
+            try:
+                div = WebDriverWait(self.bot, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
+                ul_element = div.find_element(By.CSS_SELECTOR, 'ul.pagination')
+                li_elements = ul_element.find_elements(By.TAG_NAME, 'li')
+                last_item = li_elements[-2]
+                link_element = last_item.find_element(By.TAG_NAME, 'a')
+                numer_stron_sesji = link_element.get_attribute("innerHTML")
+                return int(numer_stron_sesji)
+            except Exception as e:
+                div = WebDriverWait(self.bot, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-test='job-offers-bottom-pagination']")))
+                second_last_button = div.find_element(By.CSS_SELECTOR, "button[data-test^='bottom-pagination-button-page-']:nth-last-child(2)")
+                numer_stron_sesji = second_last_button.text
+                self.mode = 1
+                return int(numer_stron_sesji)
+        except:
+            print("\r Error getting number of all sites", end="")
+
     # Pobieranie danych na temat ofert z it.pracuj.pl (nie z it.pracuj.pl/praca)
     def get_data(self,numer_stron_sesji):
         print("\rGetting data", end="")
@@ -133,24 +132,20 @@ class Bot:
                 unique_links = set()
                 try:
                     location = oferta.get_attribute("data-test-location")
+                    # Jesli oferta ma wiele lokalizacji, rozwiń i kliknij pierwszą lokalizację od góry
                     if location == "multiple":
-                        # Wait for the element to be clickable, and then click it
                         oferta.click()
-
                     offer_link_element = oferta.find_element(By.CSS_SELECTOR, "a[data-test='link-offer']")
                     link_text = offer_link_element.get_attribute("href")
                     if link_text and link_text not in unique_links:
                         self.linki_do_oferty[self.id_oferty] = link_text
                         unique_links.add(link_text)
                     self.id_oferty += 1
-                except ElementClickInterceptedException:
-                    # Handle the ElementClickInterceptedException here, such as waiting for the overlaying element to disappear or moving away
-                    pass
-                except Exception as e:
-                    # Handle other exceptions here if needed
+                except:
+                    print("\rError getting or clicking offer", end="")
                     pass
             self.id_oferty = 0
-                
+
         # Pobierz dane z linków do ofert
         print("\rStart gathering data from offers", end="")
         total_offers = len(self.linki_do_oferty)
@@ -169,14 +164,14 @@ class Bot:
                     continue
                 inner_data = [''] * 14
                 # getting data
-                # title?
+                # title
                 try:
                     print("\rGetting offer title", end="")
                     title = self.bot.find_element(By.CSS_SELECTOR, 'h1.offer-viewkHIhn3[data-test="text-positionName"][data-scroll-id="job-title"]')
                     inner_data[0] = title.get_attribute("innerHTML")
                 except NoSuchElementException:
                     continue
-                # company?
+                # company
                 try:
                     print("\rGetting offer company", end="")
                     company = self.bot.find_element(By.CSS_SELECTOR, 'h2.offer-viewwtdXJ4[data-test="text-employerName"]')
@@ -186,7 +181,7 @@ class Bot:
                     inner_data[1] = company
                 except NoSuchElementException:
                     pass
-                # location?
+                # location
                 try:
                     print("\rGetting offer location", end="")
                     location = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewqtkGPu[data-test="text-benefit"]')
@@ -204,14 +199,14 @@ class Bot:
                     else:
                         inner_data[2] = location.get_attribute("innerHTML")
                     pass
-                # management_level?
+                # management_level
                 try:
                     print("\rGetting offer management_level", end="")
                     management_level = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-employment-type-name-text"]')
                     inner_data[3] = management_level.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
-                # salary?
+                # salary
                 try:
                     print("\rGetting offer salary", end="")
                     salary = self.bot.find_element(By.CSS_SELECTOR, "strong[data-test='text-earningAmount']")
@@ -224,35 +219,35 @@ class Bot:
                 except NoSuchElementException:
                     inner_data[4] = 0
                     pass 
-                # tryb_pracy?
+                # tryb_pracy
                 try:
                     print("\rGetting offer tryb_pracy", end="")
                     tryb_pracy = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-modes-text"]')
                     inner_data[5] = tryb_pracy.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
-                # etat?
+                # etat
                 try:
                     print("\rGetting offer etat", end="")
                     etat = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-schedule-text"]')
                     inner_data[6] = etat.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
-                # kontrakt?
+                # kontrakt
                 try:
                     print("\rGetting offer kontrakt", end="")
                     kontrakt = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-contracts-text"]')
                     inner_data[7] = kontrakt.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
-                # specjalizacja?
+                # specjalizacja
                 try:
                     print("\rGetting offer specjalizacja", end="")
                     specjalizacja = self.bot.find_element(By.CSS_SELECTOR, 'span.offer-viewPFKc0t')
                     inner_data[8] = specjalizacja.get_attribute("innerHTML")
                 except NoSuchElementException:
                     pass
-                # technologie_wymagane?
+                # technologie_wymagane
                 try:
                     print("\rGetting offer technologie_wymagane", end="")
                     div_wymagane = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="technologies-expected-1"][data-test="section-technologies-expected"]')
@@ -266,7 +261,7 @@ class Bot:
                     inner_data[9] = self.wymagane
                 except NoSuchElementException:
                     pass
-                # technologie mile widziane?
+                # technologie mile widziane
                 try:
                     print("\rGetting offer technologie mile widziane", end="")
                     div_optional = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="technologies-optional-1"][data-test="section-technologies-optional"]')
@@ -280,8 +275,7 @@ class Bot:
                     inner_data[10] = self.mile_widziane
                 except NoSuchElementException:
                     pass
-                # doswiadczenie? sucks but kinda works
-                # studia/wykrztalcenie? :C
+                # doswiadczenie? Działa okropnie i czasem są błędy ale lepiej bez AI ciężko
                 try:
                     print("\rGetting offer doswiadczenie", end="")
                     div_doswiadczenie = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="requirements-expected-1"][data-test="section-requirements-expected"]')
@@ -301,12 +295,12 @@ class Bot:
                                         break
                 except NoSuchElementException:
                     pass
+                # studia/wykrztalcenie? Raczej ciężko dodać bez AI(nie chce mi się)
                 #
-                #
-                # PAIN
                 self.dane_oferty.append(inner_data)
         self.linki_do_oferty.clear()
-        
+
+    # Ładuje następną stronę z ofertami
     def go_to_next_site(self):
         try:
             self.retry = False
@@ -322,7 +316,3 @@ class Bot:
                 self.retry = True
                 self.current_site -= 1
             self.go_to_next_site()
-    
-
-    
-    

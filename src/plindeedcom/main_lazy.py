@@ -9,7 +9,6 @@ def extract_numeric_value(text):
 
 class Bot:
     def __init__(self):
-        print("\rInitiation", end="")
         options = webdriver.ChromeOptions()
         #options.add_argument('--headless=new') just does not work on this site maybe make it doffrent way someday
         options.add_argument('--disable-gpu')
@@ -190,16 +189,20 @@ class Bot:
                 parts = inner_html.split("(")
                 self.data.append(extract_numeric_value(parts[1]))
             #maybe add other someday
+        #ilosc ofert
+        count_element = self.bot.find_element(By.CLASS_NAME, 'jobsearch-JobCountAndSortPane-jobCount')
+        span = count_element.find_element(By.TAG_NAME, 'span')
+        span_innerhtml = span.get_attribute("innerHTML")
+        self.data.append(extract_numeric_value(span_innerhtml))
+        
         #for data in self.data:
         #    print(data)
         
         # add management lvl someday
         
-        
+#db_operations_indeed.clear_tables() DO NOT USE PLZ BROOO
 bot = Bot()
 bot.get_data()
 db_operations_indeed.insert_data(bot.data)
-
+print("DONE!")
 #insert to db here
-
-input(" ")

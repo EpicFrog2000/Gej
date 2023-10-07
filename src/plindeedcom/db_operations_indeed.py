@@ -12,12 +12,12 @@ def insert_data(data_list):
     todays_date = str(todays_date.year) + "-" + str(todays_date.month)  + "-" + str(todays_date.day)
 
     connection = mydb.cursor()
-    sql = "INSERT INTO `indeed_data_daily`(`tryb_hybrydowo`, `tryb_zdalnie`, `wynagrodzenie_1666,67`, `wynagrodzenie_5000,00`, `wynagrodzenie_6666,67`, `wynagrodzenie_10833,33`, `wynagrodzenie_20833,33`, `pelny_etat`, `stala`, `podwykonawstwo`, `staz/praktyka`, `tymczasowa`, `częsc_etatu`, `wolontariat`, `licencjat`, `magister`, `inzynier`, `srednie`, `srednie_techniczne/branzowe`, `doktor`, `zasadnicze_zawodowe/branzowe`, `podstawowe`, `english`, `polish`, `date`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    sql = "INSERT INTO `indeed_data_daily`(`tryb_hybrydowo`, `tryb_zdalnie`, `wynagrodzenie_1666,67`, `wynagrodzenie_5000,00`, `wynagrodzenie_6666,67`, `wynagrodzenie_10833,33`, `wynagrodzenie_20833,33`, `pelny_etat`, `stala`, `podwykonawstwo`, `staz/praktyka`, `tymczasowa`, `częsc_etatu`, `wolontariat`, `licencjat`, `magister`, `inzynier`, `srednie`, `srednie_techniczne/branzowe`, `doktor`, `zasadnicze_zawodowe/branzowe`, `podstawowe`, `english`, `polish`, `date`, `ilosc`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     values = (data_list[0], data_list[1], data_list[2], data_list[3], data_list[4],
               data_list[5], data_list[6], data_list[7], data_list[8], data_list[9],
               data_list[10], data_list[11], data_list[12], data_list[13], data_list[14],
               data_list[15], data_list[16], data_list[17], data_list[18], data_list[19],
-              data_list[20], data_list[21], data_list[24], data_list[25], todays_date)
+              data_list[20], data_list[21], data_list[24], data_list[25], todays_date,data_list[26])
     connection.execute(sql, values)
     mydb.commit()
     

@@ -16,7 +16,7 @@
         <div class="menu_option">
             <details>
               <summary>DANE ZE STRONEK</summary>
-              <a href="project1.php" class="option"> dane z strony 1 </a></br>
+              <a href="index.php" class="option"> dane z it.pracuj.pl </a></br>
               <a href="project2.php" class="option"> dane z strony 2 </a></br>
               <a href="project3.php" class="option"> dane z strony 3 </a></br>
             </details>
