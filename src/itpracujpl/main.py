@@ -16,7 +16,7 @@ def main():
         bot.kliknij_przycisk_ciasteczka()
         numer_stron_sesji = bot.get_all_sites_nums()
         
-    #TODO Podziel program aby działał na większej ilości wątków w zależności od tego na jakim serwerze zostawie ten program
+    #TODO Podziel program aby działał na większej ilości wątków w zależności od tego na jakim serwerze zostawie te skrypty
     #     tzn. strony od 1-10 na jednym wątku 11-20 na drugim wątku itd.
 
     while int(bot.obecna_strona) <= int(numer_stron_sesji):

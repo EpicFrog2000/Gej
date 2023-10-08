@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import ElementClickInterceptedException
 import html
 import re
 
@@ -14,7 +13,7 @@ key_words_doswiadczenie = {
 }
 
 
-# Obie funkcje były napisane jakiś czas temu, nie wiem dlaczego obie egzystują pomimo tego samogo przeznaczenia, nie ruszam bo nie pamiętam a działa :p (07.10.2023)
+# Obie poniższe funkcje były napisane jakiś czas temu, nie wiem dlaczego obie egzystują pomimo tego samogo przeznaczenia, nie ruszam :P (komentarz z 07.10.2023)
 def extract_number(input_string):
     pattern = r'\s(\d+)\s'
     match = re.search(pattern, input_string)

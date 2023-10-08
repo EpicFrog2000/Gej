@@ -203,7 +203,7 @@ def insert_to_historic_data():
     connection.execute("INSERT INTO historic_location (location, count, date) SELECT location, COUNT(*) AS location_count, '"+str(todays_date)+"' AS date FROM `data` GROUP BY location ORDER BY location_count DESC LIMIT 20;")
     mydb.commit()
 
-    #czyści dane z tabelek z danymi dziennymi
+    # czyści dane z tabelek z danymi dziennymi
 def clear_tables():
     connection = mydb.cursor()
     tables_to_clear = [
