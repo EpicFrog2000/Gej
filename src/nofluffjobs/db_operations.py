@@ -64,7 +64,7 @@ def insert_historic_data():
     mydb.commit()
     
     #doswiadczenie
-    connection.execute("SELECT CASE WHEN doswiadczenie BETWEEN 1 AND 2 THEN '1-2' WHEN doswiadczenie BETWEEN 2 AND 3 THEN '2-3' WHEN doswiadczenie BETWEEN 3 AND 5 THEN '3-5' WHEN doswiadczenie BETWEEN 5 AND 8 THEN '5-8' WHEN doswiadczenie >= 8 THEN '8+' ELSE 'brak_danych'  -- Handle any other cases END AS experience_range, COUNT(*) AS count_in_range FROM daily_data GROUP BY experience_range ORDER BY experience_range;")
+    connection.execute("SELECT CASE WHEN doswiadczenie BETWEEN 1 AND 2 THEN '1-2' WHEN doswiadczenie BETWEEN 2 AND 3 THEN '2-3' WHEN doswiadczenie BETWEEN 3 AND 5 THEN '3-5' WHEN doswiadczenie BETWEEN 5 AND 8 THEN '5-8' WHEN doswiadczenie >= 8 THEN '8+' ELSE 'brak_danych' END AS experience_range, COUNT(*) AS count_in_range FROM daily_data GROUP BY experience_range ORDER BY experience_range;")
     count_doswaidczenie = connection.fetchone()
     for datarow in count_doswaidczenie:
         values = (datarow[0], datarow[1], datarow[2], datarow[3], datarow[4],todays_date)
@@ -73,7 +73,7 @@ def insert_historic_data():
         mydb.commit()
         
     # salary
-    connection.execute("SELECT CASE WHEN salary BETWEEN 1 AND 4000 THEN '1-4000' WHEN salary BETWEEN 4000 AND 6000 THEN '4000-6000' WHEN salary BETWEEN 6000 AND 10000 THEN '6000-10000' WHEN salary BETWEEN 10000 AND 15000 THEN '10000-15000' WHEN salary BETWEEN 15000 AND 20000 THEN '15000-20000' WHEN salary >= 20000 THEN '20000+' ELSE 'Unknown'  -- Handle any other cases END AS salary_range, COUNT(*) AS count_in_range FROM daily_data GROUP BY salary_range ORDER BY salary_range;")
+    connection.execute("SELECT CASE WHEN salary BETWEEN 1 AND 4000 THEN '1-4000' WHEN salary BETWEEN 4000 AND 6000 THEN '4000-6000' WHEN salary BETWEEN 6000 AND 10000 THEN '6000-10000' WHEN salary BETWEEN 10000 AND 15000 THEN '10000-15000' WHEN salary BETWEEN 15000 AND 20000 THEN '15000-20000' WHEN salary >= 20000 THEN '20000+' ELSE 'Unknown' END AS salary_range, COUNT(*) AS count_in_range FROM daily_data GROUP BY salary_range ORDER BY salary_range;")
     count_salary = connection.fetchone()
     for datarow in count_salary:
         values = (datarow[0], datarow[1], datarow[2], datarow[3], datarow[2], datarow[3], todays_date)
