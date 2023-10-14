@@ -41,7 +41,7 @@ def tłumacz_i_filtruj(lista):
 
 def insert_data(data_list,start_id_offer):
     connection = mydb.cursor()
-    id_offer = start_id_offer 
+    id_offer = start_id_offer
     for data_row in data_list:
         # insert into main table
         sql = "INSERT INTO data (title, company, location, salary, id, doswiadczenie) VALUES (%s,%s,%s,%s,%s,%s)"

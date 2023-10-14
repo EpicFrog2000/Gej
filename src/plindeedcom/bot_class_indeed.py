@@ -164,7 +164,7 @@ class Bot:
             a_element = li.find_element(By.TAG_NAME, "a")
             inner_html = a_element.get_attribute("innerHTML")
             parts = inner_html.split("(")
-            data_temp = ['', '0']  # Create a new data_temp list for each iteration
+            data_temp = ['', '0']
             data_temp[1] = extract_numeric_value(parts[1])
             partssecondary = parts[0].split(",")
             if len(partssecondary) > 1:
