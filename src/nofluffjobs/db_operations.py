@@ -45,22 +45,27 @@ def insert_historic_data():
 
     #offers_count
     connection.execute("INSERT INTO historic_count (count, date) SELECT COUNT(id) AS count, '"+str(todays_date)+"' AS date FROM daily_data;")
+    connection.fetchall()  # Consume any pending results
     mydb.commit()
 
     #category
     connection.execute("INSERT INTO historic_kategoria (kategoria, count, date) SELECT category, COUNT(*) AS category_count, '"+str(todays_date)+"' AS date FROM `daily_data` GROUP BY category ORDER BY category_count DESC LIMIT 20;")
+    connection.fetchall()  # Consume any pending results
     mydb.commit()
     
     #lokacje
     connection.execute("INSERT INTO historic_lokacja (lokacja, count, date) SELECT lokacja, COUNT(*) AS location_count, '"+str(todays_date)+"' AS date FROM `daily_lokacje` GROUP BY lokacja ORDER BY location_count DESC LIMIT 20;")
+    connection.fetchall()  # Consume any pending results
     mydb.commit()
     
     #wymagania_must
     connection.execute("INSERT INTO historic_wymagania_must (wymaganie, count, date) SELECT wymaganie, COUNT(*) AS wymaganie_count, '"+str(todays_date)+"' AS date FROM `daily_wymagania_must` GROUP BY wymaganie ORDER BY wymaganie_count DESC LIMIT 20;")
+    connection.fetchall()  # Consume any pending results
     mydb.commit()
     
     #wymagania_nice
     connection.execute("INSERT INTO historic_wymagania_nice (wymaganie, count, date) SELECT wymaganie, COUNT(*) AS wymaganie_count, '"+str(todays_date)+"' AS date FROM `daily_wymagania_nice` GROUP BY wymaganie ORDER BY wymaganie_count DESC LIMIT 20;")
+    connection.fetchall()  # Consume any pending results
     mydb.commit()
     
     # doswiadczenie
@@ -83,14 +88,14 @@ def insert_historic_data():
 
     #seniority
     connection.execute("SELECT seniority, COUNT(*) AS seniority_count FROM daily_data GROUP BY seniority;")
-    seniority_querry = connection.fetchone()
+    seniority_querry = connection.fetchall()
     for data in seniority_querry:
         values = (data[0], data[1], todays_date)
         sql = "INSERT INTO historic_seniority (seniority, count, date) VALUES (%s,%s,%s)"
         connection.execute(sql, values)
         mydb.commit()
-    
-        
+
+
 def clear_tables():
     connection = mydb.cursor()
     tables_to_clear = [
