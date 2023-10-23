@@ -1,0 +1,193 @@
+{% extends 'right_content/right_layout.html' %}
+{% block title %}Dane z portalu nofluffjobs{% endblock %}
+{% block secondtitle %}Dane z portalu nofluffjobs{% endblock %}
+{% block today_content %}
+<div class="dane_top">
+    <div class="today_data_div">
+        <a class="today_title">Informacje o wynagrodzeniu</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Wynagrodzenie w pln</td></tr>
+            {% for range, count in salary_counts.items() %}
+                <tr><td>{{count}}</td><td>{{range}}</td></tr>
+        {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane na o doswiadczeniu</a>
+        <table class="table-container">
+            <tr><td>Ilość lat</td><td>Nazwa</td></tr>
+            {% for doswiadczenie_value, doswiadczenie_count in count_doswiadczenie.items() %}
+            <tr><td>{{doswiadczenie_count}}</td><td>{{ doswiadczenie_value }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane na o poziomie</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Nazwa</td></tr>
+            {% for seniority_value, seniority_count in count_seniority.items() %}
+            <tr><td>{{seniority_count}}</td><td>{{seniority_value}}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane na kategorii</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Nazwa</td></tr>
+            {% for item in count_category %}       
+            <tr><td>{{item.count}}</td><td>{{ item.category }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="today_data_div">
+        <a class="today_title">Dane o 20 najpopularniejszych lokacjiach</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Nazwa</td></tr>
+            {% for item in count_locations %}       
+            <tr><td>{{item.count }}</td><td>{{ item.lokacja }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane o 20 najbardziej porządanych wymagań must</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Nazwa</td></tr>
+            {% for item in count_wymagania_must %}       
+            <tr><td>{{item.count}}</td><td>{{item.wymaganie }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane o 20 najbardziej porządanych wymagan nice</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Nazwa</td></tr>
+            {% for item in count_wymagania_nice %}       
+            <tr><td>{{item.count}}</td><td>{{item.wymaganie }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    <!---->
+    <div class="today_data_div" style="height: min-content;width: min-content">
+        <a>Chcesz zobaczyć więcej danych?</a>
+        <a>Daj mi znać!</a>
+        <div class="today_data_div" style="height: min-content;width: min-content">
+            <a href="{{ url_for('render_kontakt')}}" style="color: orange">Wyślij mi wiadomość</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block historic_content %}
+<div class="Historyczne_dane">
+    
+    <div class="chart">
+        <hr>
+        <p id="oferty" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Ilość ofert<p>
+        <hr>
+        <canvas id="count_chart"></canvas>
+        <script>
+            var chartData1 = {{ chart_data1|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="doswiadczenie" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Doswiadczenie<p>
+        <hr>
+        <canvas id="historic_doswiadczenie_chart"></canvas>
+        <script>
+            var chartData2 = {{ chart_data2|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="kategorie" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Kategorie<p>
+        <hr>
+        <canvas id="historic_kategoria_chart"></canvas>
+        <script>
+            var chartData3 = {{ chart_data3|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="lokacje" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Lokacje<p>
+        <hr>
+        <canvas id="historic_lokacja_chart"></canvas>
+        <script>
+            var chartData4 = {{ chart_data4|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="wynagrodzenie" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Wynagrodzenie<p>
+        <hr>
+        <canvas id="historic_salary_chart"></canvas>
+        <script>
+            var chartData5 = {{ chart_data5|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div id="seniority" class="chart">
+        <hr>
+        <p style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Seniority<p>
+        <hr>
+        <canvas id="historic_seniority_chart"></canvas>
+        <script>
+            var chartData6 = {{ chart_data6|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div  id="wymaganiaNice" class="chart">
+        <hr>
+        <p style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Wymagania Must<p>
+        <hr>
+        <canvas id="historic_wymagania_must_chart"></canvas>
+        <script>
+            var chartData7 = {{ chart_data7|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div id="wymaganiaMust" class="chart">
+        <hr>
+        <p style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Wymaganie Nice<p>
+        <hr>
+        <canvas id="historic_wymagania_nice_chart"></canvas>
+        <script>
+            var chartData8 = {{ chart_data8|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <script src="{{ url_for('static', filename='js/nofluffjobs_charts.js') }}"></script>
+</div>
+{% endblock %}
+
+{% block lower_menu %}
+<div class="lower_menu">
+    <h3 style="text-align: center;"><a href="#Ostatnio">Ostatnio zebrane dane</a></h3>
+    <ul style="list-style-type: none;">
+        <li><a>Wynagrodzenie</a></li>
+        <li><a>Doswiadczenie</a></li>
+        <li><a>Poziom</a></li>
+        <li><a>Kategoria</a></li>
+        <li><a>Lokacje</a></li>
+        <li><a>Wymagania Must</a></li>
+        <li><a>Wymaganie Nice</a></li>
+    </ul>
+    <h3 style="text-align: center;"><a href="#Historyczne">Historyczne dane</a></h3>
+    <ul style="list-style-type: none;">
+        <li><a href="#oferty">Ilość ofert</a></li>
+        <li><a href="#doswiadczenie">Doswiadczenie</a></li>
+        <li><a href="#kategorie">Kategorie</a></li>
+        <li><a href="#lokacje">Lokacje</a></li>
+        <li><a href="#wynagrodzenie">Wynagrodzenie</a></li>
+        <li><a href="#seniority">Seniority</a></li>
+        <li><a href="#wymaganiaMust">Wymagania Must</a></li>
+        <li><a href="#wymaganiaNice">Wymaganie Nice</a></li>
+    </ul>
+</div>
+{% endblock %}

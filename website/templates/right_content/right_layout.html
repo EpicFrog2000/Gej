@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="right_main">
+    <div style="display:flex; justify-content: center; align-items: center; font-size: 30px;">
+        <p id="Ostatnio" style="margin: 10px;">Ilość ofert z ostatnio zebranych danych: {{count_all}}. Te dane zostały zebrane ze strony: <a style="color: rgb(190, 190, 190);" href="{{site_link}}" target="_blank">{{site_title}}</a>.</p> 
+    </div>
+    <hr></hr>
+
+    {% block today_content %}{% endblock %}
+    
+    <hr></hr>
+    <div style="display:flex; justify-content: center; align-items: center; font-size: 30px;">
+        <p id="Historyczne" style="margin: 10px;">Historycznie zebrane dane</p>
+    </div>
+    <hr></hr>
+    {% block historic_content %}{% endblock %}
+
+</div>
+{% endblock %}

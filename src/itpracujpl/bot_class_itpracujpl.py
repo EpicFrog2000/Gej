@@ -14,6 +14,7 @@ key_words_doswiadczenie = {
 
 
 # Obie poniższe funkcje były napisane jakiś czas temu, nie wiem dlaczego obie egzystują pomimo tego samogo przeznaczenia, nie ruszam :P (komentarz z 07.10.2023)
+# nieważne już pamiętam xd
 def extract_number(input_string):
     pattern = r'\s(\d+)\s'
     match = re.search(pattern, input_string)
@@ -30,7 +31,7 @@ class Bot:
     def __init__(self):
         print("\rInitiation", end="")
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless=new')
+        options.add_argument('--headless')
         options.add_argument('--disable-gpu')
         options.add_argument('--window-size=1920x1080')
         options.add_argument('log-level=3')
@@ -62,6 +63,18 @@ class Bot:
         self.retry = False
         # czasem ładuje się jedna domena a czasem druga więc są 2 skrypty na 2 różne domeny
         self.mode = 0 # 0 is it.pracuj.pl and 1 is it.pracuj.pl/praca, it is decided in get_all_sites_nums()
+        
+    #tymczasowa funkcja na zamknięcie okna z reklamą
+    def kliknij_przycisk_event(self):
+        print("\rClicking cookies button", end="")
+        try:
+            element_xpath = "//span[@aria-hidden='true' and @class='core_ig18o8w size-medium position-center']"
+            # Wait for the element to be clickable
+            wait = WebDriverWait(self.bot, 10)
+            element = wait.until(EC.presence_of_element_located((By.XPATH, element_xpath)))
+            element.click()
+        except:
+            pass
 
     # Kilka przycisk z akceptacją ciasteczek jeśli się pojawi
     def kliknij_przycisk_ciasteczka(self):
@@ -116,7 +129,7 @@ class Bot:
                     if href not in unikalne_linki:
                         self.linki_do_oferty[self.id_oferty] = href
                         unikalne_linki.add(href)
-                except NoSuchElementException:
+                except:
                     offer_link_element = oferta.find_element(By.CSS_SELECTOR, 'a[data-test="offer-link"]')
                     link_text = offer_link_element.get_attribute("href")
                     if link_text and link_text not in unikalne_linki:
@@ -158,7 +171,7 @@ class Bot:
             if oferta != '':
                 try:
                     self.bot.get(str(oferta))
-                    WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.ID, "kansas-offerview")))
+                    WebDriverWait(self.bot, 3).until(EC.presence_of_element_located((By.ID, "kansas-offerview")))
                     print("\r\033[K", end='')
                     print(f"\rGetting offer site   ", end="")
                 except:
@@ -170,7 +183,7 @@ class Bot:
                     print("\rGetting offer title", end="")
                     title = self.bot.find_element(By.CSS_SELECTOR, 'h1.offer-viewkHIhn3[data-test="text-positionName"][data-scroll-id="job-title"]')
                     tymczasowe_dane_jednej_oferty[0] = title.get_attribute("innerHTML")
-                except NoSuchElementException:
+                except:
                     continue
                 # company
                 try:
@@ -180,7 +193,7 @@ class Bot:
                     index_of_first_less_than = company.find("<")
                     company = company[:index_of_first_less_than].strip()
                     tymczasowe_dane_jednej_oferty[1] = company
-                except NoSuchElementException:
+                except:
                     pass
                 # location
                 try:
@@ -191,7 +204,7 @@ class Bot:
                         tymczasowe_dane_jednej_oferty[2] = parts[0]
                     else:
                         tymczasowe_dane_jednej_oferty[2] = location.get_attribute("innerHTML")
-                except NoSuchElementException:
+                except:
                     print("\rGetting offer location after exeption", end="")
                     location = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewUIYWmu[data-test="text-benefit"]')
                     parts = location.get_attribute("innerHTML").split(", ")
@@ -205,7 +218,7 @@ class Bot:
                     print("\rGetting offer management_level", end="")
                     management_level = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-employment-type-name-text"]')
                     tymczasowe_dane_jednej_oferty[3] = management_level.get_attribute("innerHTML")
-                except NoSuchElementException:
+                except:
                     pass
                 # salary
                 try:
@@ -217,7 +230,7 @@ class Bot:
                     salary_to = extract_numeric_value(html.unescape(salary_to.get_attribute("innerHTML")))
                     tymczasowe_dane_jednej_oferty[4] = salary_from
                     #tymczasowe_dane_jednej_oferty[5] = salary_to
-                except NoSuchElementException:
+                except:
                     tymczasowe_dane_jednej_oferty[4] = 0
                     pass 
                 # tryb_pracy
@@ -225,28 +238,28 @@ class Bot:
                     print("\rGetting offer tryb_pracy", end="")
                     tryb_pracy = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-modes-text"]')
                     tymczasowe_dane_jednej_oferty[5] = tryb_pracy.get_attribute("innerHTML")
-                except NoSuchElementException:
+                except:
                     pass
                 # etat
                 try:
                     print("\rGetting offer etat", end="")
                     etat = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-schedule-text"]')
                     tymczasowe_dane_jednej_oferty[6] = etat.get_attribute("innerHTML")
-                except NoSuchElementException:
+                except:
                     pass
                 # kontrakt
                 try:
                     print("\rGetting offer kontrakt", end="")
                     kontrakt = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-contracts-text"]')
                     tymczasowe_dane_jednej_oferty[7] = kontrakt.get_attribute("innerHTML")
-                except NoSuchElementException:
+                except:
                     pass
                 # specjalizacja
                 try:
                     print("\rGetting offer specjalizacja", end="")
                     specjalizacja = self.bot.find_element(By.CSS_SELECTOR, 'span.offer-viewPFKc0t')
                     tymczasowe_dane_jednej_oferty[8] = specjalizacja.get_attribute("innerHTML")
-                except NoSuchElementException:
+                except:
                     pass
                 # technologie_wymagane
                 try:
@@ -260,7 +273,7 @@ class Bot:
                         inner_html = link_element.get_attribute("innerHTML")
                         self.wymagane.append(inner_html)
                     tymczasowe_dane_jednej_oferty[9] = self.wymagane
-                except NoSuchElementException:
+                except:
                     pass
                 # technologie mile widziane
                 try:
@@ -274,7 +287,7 @@ class Bot:
                         inner_html = link_element.get_attribute("innerHTML")
                         self.mile_widziane.append(inner_html)
                     tymczasowe_dane_jednej_oferty[10] = self.mile_widziane
-                except NoSuchElementException:
+                except:
                     pass
                 # doswiadczenie? Działa okropnie i czasem są błędy ale lepiej bez AI ciężko
                 try:
@@ -294,7 +307,7 @@ class Bot:
                                         tymczasowe_dane_jednej_oferty[11] = result # THIS SUCKS
                                         doswiadczenie = True
                                         break
-                except NoSuchElementException:
+                except:
                     pass
                 # studia/wykrztalcenie? Raczej ciężko dodać bez AI(nie chce mi się)
                 #
@@ -303,6 +316,7 @@ class Bot:
 
     # Ładuje następną stronę z ofertami
     def go_to_next_site(self):
+        times = 0
         try:
             self.retry = False
             print("\rGoing to next site", end="")
@@ -312,7 +326,8 @@ class Bot:
             else:
                 self.bot.get("https://it.pracuj.pl/praca?pn=" + str(self.obecna_strona))
         except:
-            print("\rGoing to next site exeption", end="")
+            times+=1
+            print("\rGoing to next site exeption...", times,  end="")
             if(self.retry == False):
                 self.retry = True
                 self.obecna_strona -= 1

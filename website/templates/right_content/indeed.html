@@ -1,0 +1,192 @@
+{% extends 'right_content/right_layout.html' %}
+{% block title %}Dane z portalu indeed{% endblock %}
+{% block secondtitle %}Dane z portalu indeed{% endblock %}
+{% block today_content %}
+<div class="dane_top">
+    <div class="today_data_div">
+        <a class="today_title">Informacje o wynagrodzeniu</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Wynagrodzenie w pln</td></tr>
+            {% for wynagrodzenie_value, wynagrodzenie_count in count_wynagrodzenie.items() %}
+            <tr><td>{{wynagrodzenie_count}}</td><td>{{ wynagrodzenie_value }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane o jezykach</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Język</td></tr>
+            {% for jezyk_value, jezyk_count in count_jezyk.items() %}
+            <tr><td>{{jezyk_count}}</td><td>{{ jezyk_value }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane o trybach pracy</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Tryb</td></tr>
+            {% for tryb_value, tryb_count in count_tryb.items() %}
+            <tr><td>{{tryb_count}}</td><td>{{ tryb_value }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane o wymiarach pracy</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Wymiar pracy</td></tr>
+            {% for wymiar_value, wymiar_count in count_wymiar.items() %}
+            <tr><td>{{wymiar_count}}</td><td>{{ wymiar_value }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="today_data_div">
+        <a class="today_title">Dane o wymaganym wykrztałceniu</a>
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Wykrztałcenie</td></tr>
+            {% for wykrztalcenie_value, wykrztalcenie_count in count_wykrztalcenie.items() %}
+            <tr><td>{{wykrztalcenie_count}}</td><td>{{ wykrztalcenie_value }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="today_data_div">
+        <a class="today_title">Top 20 ilości ofert of firm</a> 
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Firma</td></tr>
+            {% for firm_data in count_firmy %}
+            <tr><td>{{ firm_data['ilosc'] }}</td><td>{{ firm_data['firma'] }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="today_data_div">
+        <a class="today_title">Top 20 lokalizacji</a> 
+        <table class="table-container">
+            <tr><td>Ilość</td><td>Firma</td></tr>
+            {% for lokalizacja_data in count_lokalizacja %}
+            <tr><td>{{ lokalizacja_data['ilosc'] }}</td><td>{{ lokalizacja_data['lokalizacja'] }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="today_data_div" style="height: min-content;width: min-content">
+        <a>Chcesz zobaczyć więcej danych?</a>
+        <a>Daj mi znać!</a>
+        <div class="today_data_div" style="height: min-content;width: min-content">
+            <a href="{{ url_for('render_kontakt')}}" style="color: orange">Wyślij mi wiadomość</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block historic_content %}
+<div class="Historyczne_dane">    
+    <div class="chart">
+        <hr>
+        <p id="oferty" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Ilość ofert<p>
+        <hr>
+        <canvas id="count_chart"></canvas>
+        <script>
+            var chartData1 = {{ chart_data1|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="wynagrodzenie" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Wynagrodzenie<p>
+        <hr>
+        <canvas id="historic_salary_chart"></canvas>
+        <script>
+            var chartData2 = {{ chart_data2|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="Języki" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Języki<p>
+        <hr>
+        <canvas id="historic_jezyki_chart"></canvas>
+        <script>
+            var chartData3 = {{ chart_data3|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="Tryb" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Tryb pracy<p>
+        <hr>
+        <canvas id="historic_tryb_chart"></canvas>
+        <script>
+            var chartData4 = {{ chart_data4|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="Wymiar" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Wymiar pracy<p>
+        <hr>
+        <canvas id="historic_wymiar_chart"></canvas>
+        <script>
+            var chartData5 = {{ chart_data5|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="Wykrztałcenie" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Wykrztałcenie<p>
+        <hr>
+        <canvas id="historic_wykrztalcenie_chart"></canvas>
+        <script>
+            var chartData6 = {{ chart_data6|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="Firmy" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Firmy<p>
+        <hr>
+        <canvas id="historic_firmy_chart"></canvas>
+        <script>
+            var chartData7 = {{ chart_data7|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="Lokalizacje" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Lokalizacje<p>
+        <hr>
+        <canvas id="historic_lokalizacja_chart"></canvas>
+        <script>
+            var chartData8 = {{ chart_data8|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <script src="{{ url_for('static', filename='js/indeed_charts.js') }}"></script>
+</div>
+{% endblock %}
+
+{% block lower_menu %}
+<div class="lower_menu">
+    <h3 style="text-align: center;"><a href="#Ostatnio">Ostatnio zebrane dane</a></h3>
+    <ul style="list-style-type: none;">
+        <li><a>Wynagrodzenie</a></li>
+        <li><a>Języki</a></li>
+        <li><a>Tryb pracy</a></li>
+        <li><a>Wymiar pracy</a></li>
+        <li><a>Wykrztałcenie</a></li>
+        <li><a>Firmy</a></li>
+        <li><a>Lokalizacje</a></li>
+    </ul>
+    <h3 style="text-align: center;"><a href="#Historyczne">Historyczne dane</a></h3>
+    <ul style="list-style-type: none;">
+        <li><a href="#oferty">Ilość ofert</a></li>
+        <li><a href="#wynagrodzenie">Wynagrodzenie</a></li>
+        <li><a href="#Języki">Języki</a></li>
+        <li><a href="#Tryb">Tryb pracy</a></li>
+        <li><a href="#Wymiar">Wymiar pracy</a></li>
+        <li><a href="#Wykrztałcenie">Wykrztałcenie</a></li>
+        <li><a href="#Firmy">Firmy</a></li>
+        <li><a href="#Lokalizacje">Lokalizacje</a></li>
+    </ul>
+</div>
+{% endblock %}

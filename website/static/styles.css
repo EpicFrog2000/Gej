@@ -1,0 +1,139 @@
+@font-face {
+    font-family: "Inconsolata";
+    src: url('/static/fonts/Inconsolata.ttf') format('truetype');
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    color: rgb(190, 190, 190);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    font-family: 'Inconsolata';
+    font-size: 18px;
+    background-color: rgb(26, 26, 26);
+    scroll-behavior: smooth;
+}
+
+.top_info{
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1{
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+.menu {
+    height: 100%;
+    background-color: rgb(15, 15, 15);
+    margin: 0;
+    padding: 0;
+    width: 15%;
+    height: 100%;
+    float: left;
+    min-width: 260px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    overflow-y: scroll;
+}
+.menu::-webkit-scrollbar {
+    display: none;
+    scroll-behavior: smooth;
+}
+.content{
+    width: 100%;
+    float: right;
+    background-color: rgb(26, 26, 26);  
+    padding: 10px;
+    padding-top: 0px;
+    overflow: auto;
+    scroll-behavior: smooth;
+}
+.content::-webkit-scrollbar {
+    display: none;
+    scroll-behavior: smooth;
+}
+
+.mid_menu{
+    margin: 10px;
+}
+
+hr{
+    width: 90%;
+}
+
+.menu_elem{
+    color: rgb(190, 190, 190);
+}
+
+.menu_elem:hover{
+    color: rgb(190, 190, 140);
+}
+
+.open li{
+    list-style-type: none;
+    margin-left: -25px;
+}
+
+.dane_top{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 0.5fr);
+    gap: 0px;
+    width: 100%;
+    margin: 0 auto;
+    height: min-content;
+}
+
+.today_data_div{
+    border:solid 1px;
+    border-color: cornflowerblue;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.today_data_div:hover{
+    background-color: rgb(25, 25, 25);
+}
+
+.today_title{
+    font-size: 30px;
+    text-align: center;
+}
+.table-container {
+    padding: 25px;
+}
+
+.lower_menu a {
+    color: rgb(190, 190, 190);
+}
+
+.lower_menu a:visited {
+    color: rgb(190, 190, 190);
+}
+
+.lower_menu a:hover {
+    color: rgb(190, 190, 140);
+}
+
+
+.dane_top.table {
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid cornflowerblue;
+    padding: 8px;
+    border-radius: 5px;
+  }

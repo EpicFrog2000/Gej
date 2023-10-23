@@ -1,0 +1,221 @@
+{% extends 'right_content/right_layout.html' %}
+{% block title %}Dane z portalu it.pracuj.pl{% endblock %}
+{% block secondtitle %}Dane z portalu it.pracuj.pl{% endblock %}
+{% block today_content %}
+    <div class="dane_top">
+        <div class="today_data_div">
+            <a class="today_title">Informacje o wynagrodzeniu</a>
+            </br>
+            <a>Ilość ofert zawierających wynagrodzenie: {{count}}%</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Wynagrodzenie w pln</td></tr>
+                {% for range, count in salary_counts.items() %}
+                    <tr><td>{{count}}</td><td>{{range}}</td></tr>
+        {% endfor %}
+                
+            </table>
+        </div>
+    
+        <div class="today_data_div">
+            <a class="today_title">Dane na o etacie</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Nazwa</td></tr>
+                {% for etat_value, etat_count in count_etat.items() %}
+                <tr><td>{{ etat_count }}</td><td>{{ etat_value }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+        <div class="today_data_div">
+            <a class="today_title">Dane na o kontaktach</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Nazwa</td></tr>
+                {% for kontrakt_value, kontrakt_count in count_kontrakt.items() %}
+                <tr><td>{{ kontrakt_count }}</td><td>{{ kontrakt_value }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+        <div class="today_data_div">
+            <a class="today_title">Dane na o poziomie</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Nazwa</td></tr>
+                {% for management_level_value, management_level_count in count_management_level.items() %}
+                <tr><td>{{management_level_count}}</td><td>{{management_level_value}}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+        <div class="today_data_div">
+            <a class="today_title">Dane na o trybie pracy</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Nazwa</td></tr>
+                {% for work_type_value, work_type_count in count_work_type.items() %}
+                <tr><td>{{work_type_count}}</td><td>{{ work_type_value }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+        <div class="today_data_div">
+            <a class="today_title">Dane o 20 najbardziej porządanych specjalizacjiach</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Nazwa</td></tr>
+                {% for item in count_spec %}       
+                <tr><td>{{item.count }}</td><td>{{ item.specjalizacja }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+        <div class="today_data_div">
+            <a class="today_title">Dane o 20 najbardziej porządanych mile widzianych technogiiach</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Nazwa</td></tr>
+                {% for item in count_technologie_mile_widziane %}       
+                <tr><td>{{item.count  }}</td><td>{{ item.technologia }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+        <div class="today_data_div">
+            <a class="today_title">Dane o 20 najbardziej porządanych wymaganych technogiiach</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Nazwa</td></tr>
+                {% for item in count_technologie_wymagane %}       
+                <tr><td>{{item.count}}</td><td>{{item.technologia }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    
+        <div class="today_data_div">
+            <a class="today_title">Dane o 20 najpopularniejszych lokacjiach</a>
+            <table class="table-container">
+                <tr><td>Ilość</td><td>Nazwa</td></tr>
+                {% for item in count_locations %}       
+                <tr><td>{{item.count}}</td><td>{{ item.location }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+        <!---->
+        <div class="today_data_div" style="height: min-content;width: min-content">
+            <a>Chcesz zobaczyć więcej danych?</a>
+            <a>Daj mi znać!</a>
+            <div class="today_data_div" style="height: min-content;width: min-content">
+                <a href="{{ url_for('render_kontakt')}}" style="color: orange">Wyślij mi wiadomość</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block historic_content %}
+
+<div class="Historyczne_dane">
+    
+    <div class="chart">
+        <hr>
+        <p id="oferty" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Ilość ofert<p>
+        <hr>
+        <canvas id="count_chart"></canvas>
+        <script>
+            var chartData1 = {{ chart_data1|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="etat" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Dane etatu<p>
+        <hr>
+        <canvas id="historic_etat_chart"></canvas>
+        <script>
+            var chartData2 = {{ chart_data2|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="kontrakt" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Dane kontraktowe<p>
+        <hr>
+        <canvas id="historic_kontrakt_data"></canvas>
+        <script>
+            var chartData3 = {{ chart_data3|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="poziom" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Dane poziomu<p>
+        <hr>
+        <canvas id="historic_management_level"></canvas>
+        <script>
+            var chartData4 = {{ chart_data4|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="tryb" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Dane tryb pracy<p>
+        <hr>
+        <canvas id="historic_work_type"></canvas>
+        <script>
+            var chartData5 = {{ chart_data5|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="techwym" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Dane technologie wymagane<p>
+        <hr>
+        <canvas id="historic_technologie_wymagane"></canvas>
+        <script>
+            var chartData7 = {{ chart_data7|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="techmil" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Dane technologie mile widziane<p>
+        <hr>
+        <canvas id="historic_technologie_mile_widziane"></canvas>
+        <script>
+            var chartData6 = {{ chart_data6|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+    <div class="chart">
+        <hr>
+        <p id="lokacje" style="display:flex; justify-content: center; align-items: center; font-size: 30px;">Dane lokacji<p>
+        <hr>
+        <canvas id="historic_location"></canvas>
+        <script>
+            var chartData8 = {{ chart_data8|tojson|safe }};
+        </script>
+        <hr>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/itpracujpl_charts.js') }}"></script>
+{% endblock %}
+{% block lower_menu %}
+<div class="lower_menu">
+    <h3 style="text-align: center;"><a href="#Ostatnio">Ostatnio zebrane dane</a></h3>
+    <ul style="list-style-type: none;">
+        <li><a>Wynagrodzenie</a></li>
+        <li><a>Etat</a></li>
+        <li><a>Kontrakt</a></li>
+        <li><a>Poziom</a></li>
+        <li><a>Tryb pracy</a></li>
+        <li><a>Specjalizacje</a></li>
+        <li><a>Technologie wymagane</a></li>
+        <li><a>Technologie mile widziane</a></li>
+        <li><a>Lokacje</a></li>
+    </ul>
+    <h3 style="text-align: center;"><a href="#Historyczne">Historyczne dane</a></h3>
+    <ul style="list-style-type: none;">
+        <li><a href="#oferty">Ilość ofert</a></li>
+        <li><a href="#etat">Etat</a></li>
+        <li><a href="#kontrakt">Kontrakt</a></li>
+        <li><a href="#poziom">Poziom</a></li>
+        <li><a href="#tryb">Tryb pracy</a></li>
+        <li><a href="#techwym">Technologie wymagane</a></li>
+        <li><a href="#techmil">Technologie mile widziane</a></li>
+        <li><a href="#lokacje">Lokacje</a></li>
+    </ul>
+</div>
+{% endblock %}

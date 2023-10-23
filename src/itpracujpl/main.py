@@ -11,6 +11,7 @@ db_operations.clear_tables()
 # Zrobione jest to po to aby upewnić się że mój świetny internet kiedyś w końcu załapie że próbuję używać przeglądarki i zacznie ładować elementy na stronie www
 while numer_stron_sesji == 0:
     bot = bot_class_itpracujpl.Bot()
+    bot.kliknij_przycisk_event()
     bot.kliknij_przycisk_ciasteczka()
     numer_stron_sesji = bot.get_all_sites_nums()
     
