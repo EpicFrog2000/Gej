@@ -29,7 +29,7 @@ def extract_numeric_value(text):
 
 class Bot:
     def __init__(self):
-        print("\rInitiation", end="")
+        ##print("\rInitiation", end="")
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
@@ -66,7 +66,7 @@ class Bot:
         
     #tymczasowa funkcja na zamknięcie okna z reklamą
     def kliknij_przycisk_event(self):
-        print("\rClicking cookies button", end="")
+        #print("\rClicking cookies button", end="")
         try:
             element_xpath = "//span[@aria-hidden='true' and @class='core_ig18o8w size-medium position-center']"
             # Wait for the element to be clickable
@@ -78,18 +78,18 @@ class Bot:
 
     # Kilka przycisk z akceptacją ciasteczek jeśli się pojawi
     def kliknij_przycisk_ciasteczka(self):
-        print("\rClicking cookies button", end="")
+        #print("\rClicking cookies button", end="")
         try:
             button = WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.XPATH, "//button[@class='size-medium variant-primary cookies_b1fqykql']")))
             button.click()
         except NoSuchElementException as e:
-            print(f"\rError occurred while clicking cookies button: {e}")
+            #print(f"\rError occurred while clicking cookies button: {e}")
             pass
 
     # Pobiera ile jest stron z ofertami
     # Szuka i wyczytuje numer z elementu który posiada ilość stron z ofertami
     def get_all_sites_nums(self):
-        print("\rGetting nums of all sites", end="")
+        #print("\rGetting nums of all sites", end="")
         try:
             try:
                 div = WebDriverWait(self.bot, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.Paginatorstyles__Wrapper-sc-1ur9l1s-0.dDposH')))
@@ -106,18 +106,19 @@ class Bot:
                 self.mode = 1
                 return int(numer_stron_sesji)
         except:
-            print("\r Error getting number of all sites", end="")
+            pass
+            #print("\r Error getting number of all sites", end="")
 
     # Pobieranie danych na temat ofert
     def get_data(self,numer_stron_sesji):
-        print("\rGetting data", end="")
+        #print("\rGetting data", end="")
         self.dane_oferty.clear()
         # Szuka elementy zawierające linki do stron z detalami oferty oraz magazynuje te linki w tablicy linki_do_oferty
         if(self.mode == 0):
             oferty = self.bot.find_elements(By.CSS_SELECTOR, 'div.ContentBoxstyles__Wrapper-sc-11jmnka-0.jevXWE.JobOfferstyles__ContentBoxWrapper-sc-1rq6ue2-0')
             self.id_oferty = 0
             self.linki_do_oferty = [''] * len(oferty)
-            print("\rGetting offer links", end="")
+            #print("\rGetting offer links", end="")
             for oferta in oferty:
                 #unikalne_linki pomaga w tym aby zduplikowane oferty nie powtarzały się 
                 unikalne_linki = set()
@@ -141,7 +142,7 @@ class Bot:
             oferty = self.bot.find_elements(By.CSS_SELECTOR, "div.listing-it_bp811tr.listing-it_po9665q[data-test='default-offer']")
             self.id_oferty = 0
             self.linki_do_oferty = [''] * len(oferty)
-            print("\rGetting offer links", end="")
+            #print("\rGetting offer links", end="")
             for oferta in oferty:
                 unikalne_linki = set()
                 try:
@@ -156,38 +157,38 @@ class Bot:
                         unikalne_linki.add(link_text)
                     self.id_oferty += 1
                 except:
-                    print("\rError getting or clicking offer", end="")
+                    #print("\rError getting or clicking offer", end="")
                     pass
             self.id_oferty = 0
 
         # Pobierz dane z linków do ofert
-        print("\rStart gathering data from offers", end="")
+        #print("\rStart gathering data from offers", end="")
         wszystkie_oferty = len(self.linki_do_oferty)
         # Odwiedza każdy link z ofertami i pobiera z niego dane
         for index, oferta in enumerate(self.linki_do_oferty, start=1):
-            print("\r\033[K", end='', flush=True)
+            #print("\r\033[K", end='', flush=True)
             msg = f"\rGetting data {index} / {wszystkie_oferty}, {str(oferta)}"
-            print(msg, end='')
+            #print(msg, end='')
             if oferta != '':
                 try:
                     self.bot.get(str(oferta))
                     WebDriverWait(self.bot, 3).until(EC.presence_of_element_located((By.ID, "kansas-offerview")))
-                    print("\r\033[K", end='')
-                    print(f"\rGetting offer site   ", end="")
+                    #print("\r\033[K", end='')
+                    #print(f"\rGetting offer site   ", end="")
                 except:
                     continue
                 tymczasowe_dane_jednej_oferty = [''] * 14
                 # getting data
                 # title
                 try:
-                    print("\rGetting offer title", end="")
+                    #print("\rGetting offer title", end="")
                     title = self.bot.find_element(By.CSS_SELECTOR, 'h1.offer-viewkHIhn3[data-test="text-positionName"][data-scroll-id="job-title"]')
                     tymczasowe_dane_jednej_oferty[0] = title.get_attribute("innerHTML")
                 except:
                     continue
                 # company
                 try:
-                    print("\rGetting offer company", end="")
+                    #print("\rGetting offer company", end="")
                     company = self.bot.find_element(By.CSS_SELECTOR, 'h2.offer-viewwtdXJ4[data-test="text-employerName"]')
                     company = company.get_attribute("innerHTML")
                     index_of_first_less_than = company.find("<")
@@ -197,7 +198,7 @@ class Bot:
                     pass
                 # location
                 try:
-                    print("\rGetting offer location", end="")
+                    #print("\rGetting offer location", end="")
                     location = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewqtkGPu[data-test="text-benefit"]')
                     parts = location.get_attribute("innerHTML").split(", ")
                     if len(parts) > 1:
@@ -205,7 +206,7 @@ class Bot:
                     else:
                         tymczasowe_dane_jednej_oferty[2] = location.get_attribute("innerHTML")
                 except:
-                    print("\rGetting offer location after exeption", end="")
+                    #print("\rGetting offer location after exeption", end="")
                     location = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewUIYWmu[data-test="text-benefit"]')
                     parts = location.get_attribute("innerHTML").split(", ")
                     if len(parts) > 1:
@@ -215,14 +216,14 @@ class Bot:
                     pass
                 # management_level
                 try:
-                    print("\rGetting offer management_level", end="")
+                    #print("\rGetting offer management_level", end="")
                     management_level = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-employment-type-name-text"]')
                     tymczasowe_dane_jednej_oferty[3] = management_level.get_attribute("innerHTML")
                 except:
                     pass
                 # salary
                 try:
-                    print("\rGetting offer salary", end="")
+                    #print("\rGetting offer salary", end="")
                     salary = self.bot.find_element(By.CSS_SELECTOR, "strong[data-test='text-earningAmount']")
                     salary_from = salary.find_element(By.CSS_SELECTOR, 'span[data-test="text-earningAmountValueFrom"]')
                     salary_to = salary.find_element(By.CSS_SELECTOR, 'span[data-test="text-earningAmountValueTo"]')
@@ -235,35 +236,35 @@ class Bot:
                     pass 
                 # tryb_pracy
                 try:
-                    print("\rGetting offer tryb_pracy", end="")
+                    #print("\rGetting offer tryb_pracy", end="")
                     tryb_pracy = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-modes-text"]')
                     tymczasowe_dane_jednej_oferty[5] = tryb_pracy.get_attribute("innerHTML")
                 except:
                     pass
                 # etat
                 try:
-                    print("\rGetting offer etat", end="")
+                    #print("\rGetting offer etat", end="")
                     etat = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-work-schedule-text"]')
                     tymczasowe_dane_jednej_oferty[6] = etat.get_attribute("innerHTML")
                 except:
                     pass
                 # kontrakt
                 try:
-                    print("\rGetting offer kontrakt", end="")
+                    #print("\rGetting offer kontrakt", end="")
                     kontrakt = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewXo2dpV[data-test="sections-benefit-contracts-text"]')
                     tymczasowe_dane_jednej_oferty[7] = kontrakt.get_attribute("innerHTML")
                 except:
                     pass
                 # specjalizacja
                 try:
-                    print("\rGetting offer specjalizacja", end="")
+                    #print("\rGetting offer specjalizacja", end="")
                     specjalizacja = self.bot.find_element(By.CSS_SELECTOR, 'span.offer-viewPFKc0t')
                     tymczasowe_dane_jednej_oferty[8] = specjalizacja.get_attribute("innerHTML")
                 except:
                     pass
                 # technologie_wymagane
                 try:
-                    print("\rGetting offer technologie_wymagane", end="")
+                    #print("\rGetting offer technologie_wymagane", end="")
                     div_wymagane = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="technologies-expected-1"][data-test="section-technologies-expected"]')
                     lista = div_wymagane.find_element(By.CSS_SELECTOR, "[class^='offer-viewEX0Eq-']")
                     li_elements = lista.find_elements(By.TAG_NAME, 'li')
@@ -277,7 +278,7 @@ class Bot:
                     pass
                 # technologie mile widziane
                 try:
-                    print("\rGetting offer technologie mile widziane", end="")
+                    #print("\rGetting offer technologie mile widziane", end="")
                     div_optional = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="technologies-optional-1"][data-test="section-technologies-optional"]')
                     lista = div_optional.find_element(By.CSS_SELECTOR, "[class^='offer-viewEX0Eq-']")
                     li_elements = lista.find_elements(By.TAG_NAME, 'li')
@@ -291,7 +292,7 @@ class Bot:
                     pass
                 # doswiadczenie? Działa okropnie i czasem są błędy ale lepiej bez AI ciężko
                 try:
-                    print("\rGetting offer doswiadczenie", end="")
+                    #print("\rGetting offer doswiadczenie", end="")
                     div_doswiadczenie = self.bot.find_element(By.CSS_SELECTOR, 'div.offer-viewfjH4z3[data-scroll-id="requirements-expected-1"][data-test="section-requirements-expected"]')
                     lista = div_doswiadczenie.find_element(By.CSS_SELECTOR, '[class^="offer-view6lWuAT"]')
                     li_elements = lista.find_elements(By.TAG_NAME, 'li')
@@ -319,7 +320,7 @@ class Bot:
         times = 0
         try:
             self.retry = False
-            print("\rGoing to next site", end="")
+            #print("\rGoing to next site", end="")
             self.obecna_strona += 1
             if(self.mode ==0):
                 self.bot.get("https://it.pracuj.pl/?pn=" + str(self.obecna_strona))
@@ -327,7 +328,7 @@ class Bot:
                 self.bot.get("https://it.pracuj.pl/praca?pn=" + str(self.obecna_strona))
         except:
             times+=1
-            print("\rGoing to next site exeption...", times,  end="")
+            #print("\rGoing to next site exeption...", times,  end="")
             if(self.retry == False):
                 self.retry = True
                 self.obecna_strona -= 1

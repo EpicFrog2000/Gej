@@ -4,11 +4,11 @@
 {% block today_content %}
 <div class="dane_top">
     <div class="today_data_div">
-        <a class="today_title">Informacje o wynagrodzeniu</a>
+        <a class="today_title">Informacje o wynagrodzeniu</a> 
         <table class="table-container">
-            <tr><td>Ilość</td><td>Wynagrodzenie w pln</td></tr>
-            {% for wynagrodzenie_value, wynagrodzenie_count in count_wynagrodzenie.items() %}
-            <tr><td>{{wynagrodzenie_count}}</td><td>{{ wynagrodzenie_value }}</td></tr>
+            <tr><td>Ilość</td><td>Wysokość</td></tr>
+            {% for wynagrodzenie_data in count_wynagrodzenie %}
+            <tr><td>{{ wynagrodzenie_data['ilosc'] }}</td><td>{{ wynagrodzenie_data['nazwa'] }}</td></tr>
             {% endfor %}
         </table>
     </div>
@@ -50,7 +50,7 @@
     </div>
 
     <div class="today_data_div">
-        <a class="today_title">Top 20 ilości ofert of firm</a> 
+        <a class="today_title">Top ilości ofert of firm</a> 
         <table class="table-container">
             <tr><td>Ilość</td><td>Firma</td></tr>
             {% for firm_data in count_firmy %}
@@ -60,7 +60,7 @@
     </div>
 
     <div class="today_data_div">
-        <a class="today_title">Top 20 lokalizacji</a> 
+        <a class="today_title">Top lokalizacje</a> 
         <table class="table-container">
             <tr><td>Ilość</td><td>Firma</td></tr>
             {% for lokalizacja_data in count_lokalizacja %}
@@ -167,6 +167,7 @@
 
 {% block lower_menu %}
 <div class="lower_menu">
+<h2 style="text-align: center;">Aktualne typy danych z tej strony</h2>
     <h3 style="text-align: center;"><a href="#Ostatnio">Ostatnio zebrane dane</a></h3>
     <ul style="list-style-type: none;">
         <li><a>Wynagrodzenie</a></li>

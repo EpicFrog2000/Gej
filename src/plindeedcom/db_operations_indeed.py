@@ -12,28 +12,33 @@ def insert_data(data_list):
     todays_date = str(todays_date.year) + "-" + str(todays_date.month)  + "-" + str(todays_date.day)
 
     connection = mydb.cursor()
-    sql = "INSERT INTO `menu_data`(`tryb_hybrydowo`, `tryb_zdalnie`, `wynagrodzenie_1666,67`, `wynagrodzenie_5000,00`, `wynagrodzenie_6666,67`, `wynagrodzenie_10833,33`, `wynagrodzenie_20833,33`, `pelny_etat`, `stala`, `podwykonawstwo`, `staz/praktyka`, `tymczasowa`, `częsc_etatu`, `wolontariat`, `licencjat`, `magister`, `inzynier`, `srednie`, `srednie_techniczne/branzowe`, `doktor`, `zasadnicze_zawodowe/branzowe`, `podstawowe`, `english`, `polish`, `date`, `ilosc`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-    values = (data_list[0], data_list[1], data_list[2], data_list[3], data_list[4],
+    sql = "INSERT INTO `menu_data`(`tryb_hybrydowo`, `tryb_zdalnie`, `pelny_etat`, `stala`, `podwykonawstwo`, `staz/praktyka`, `tymczasowa`, `częsc_etatu`, `wolontariat`, `licencjat`, `magister`, `inzynier`, `srednie`, `srednie_techniczne/branzowe`, `doktor`, `zasadnicze_zawodowe/branzowe`, `podstawowe`, `english`, `polish`, `date`, `ilosc`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    values = (data_list[0], data_list[1], data_list[3], data_list[4],
               data_list[5], data_list[6], data_list[7], data_list[8], data_list[9],
               data_list[10], data_list[11], data_list[12], data_list[13], data_list[14],
-              data_list[15], data_list[16], data_list[17], data_list[18], data_list[19],
-              data_list[20], data_list[21], data_list[24], data_list[25], todays_date,data_list[26])
+              data_list[15], data_list[16], data_list[17], data_list[20], data_list[21], todays_date, data_list[22])
     connection.execute(sql, values)
     mydb.commit()
     
-    for lokalizacja in data_list[22]:
+    for lokalizacja in data_list[18]:
         sql = "INSERT INTO `lokalizacja_data`(`date`, `nazwa`, `ilosc`) VALUES (%s,%s,%s)"
         values = (todays_date, lokalizacja[0], lokalizacja[1])
         connection.execute(sql, values)
     mydb.commit()
     
-    for firma in data_list[23]:
+    for firma in data_list[19]:
         sql = "INSERT INTO `firmy_data`(`date`, `nazwa`, `ilosc`) VALUES (%s,%s,%s)"
         values = (todays_date, firma[0], firma[1])
         connection.execute(sql, values)
     mydb.commit()
     
-    print("data succesfuly inserted")
+    for wynagrodzenie in data_list[2]:
+        sql = "INSERT INTO `wynagrodzenie_data`(`date`, `nazwa`, `ilosc`) VALUES (%s,%s,%s)"
+        values = (todays_date, wynagrodzenie[0], wynagrodzenie[1])
+        connection.execute(sql, values)
+    mydb.commit()
+
+    #print("data succesfuly inserted")
     connection.close()
         
 def clear_tables():

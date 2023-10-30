@@ -1,5 +1,5 @@
 import mysql.connector
-import key_words_for_pracujpl
+from .key_words_for_pracujpl import * 
 import datetime
 
 mydb = mysql.connector.connect(
@@ -52,8 +52,9 @@ def insert_data(data_list,start_id_offer):
         mydb.commit()
         # insert into management_level table
         lista_management_level = data_row[3].split(",")
+        lista_management_level = [item.strip() for item in lista_management_level]
         for item in lista_management_level:
-            matches = [key for key in key_words_for_pracujpl.key_words_management_level if key in item]
+            matches = [key for key in key_words_management_level if key in item]
             matches = tłumacz_i_filtruj(matches)
             for match in matches:
                 sql = "INSERT INTO daily_management_level (id, management_level) VALUES (%s,%s)"
@@ -62,8 +63,9 @@ def insert_data(data_list,start_id_offer):
                 mydb.commit()
         # insert into tryb_pracy table
         lista_tryb_pracy = data_row[5].split(",")
+        lista_tryb_pracy = [item.strip() for item in lista_tryb_pracy]
         for item in lista_tryb_pracy:
-            matches = [key for key in key_words_for_pracujpl.key_words_work_type if key in item]
+            matches = [key for key in key_words_work_type if key in item]
             matches = tłumacz_i_filtruj(matches)
             for match in matches:
                 sql = "INSERT INTO daily_work_type (id, work_type) VALUES (%s,%s)"
@@ -72,8 +74,9 @@ def insert_data(data_list,start_id_offer):
                 mydb.commit()
         # insert into etat table
         lista_etat = data_row[6].split(",")
+        lista_etat = [item.strip() for item in lista_etat]
         for item in lista_etat:
-            matches = [key for key in key_words_for_pracujpl.key_words_etat if key in item]
+            matches = [key for key in key_words_etat if key in item]
             matches = tłumacz_i_filtruj(matches)
             for match in matches:
                 sql = "INSERT INTO daily_etat (id, etat) VALUES (%s,%s)"
@@ -82,8 +85,9 @@ def insert_data(data_list,start_id_offer):
                 mydb.commit()
         # insert into kontrakt table
         lista_kontrakt = data_row[7].split(",")
+        lista_kontrakt = [item.strip() for item in lista_kontrakt]
         for item in lista_kontrakt:
-            matches = [key for key in key_words_for_pracujpl.key_words_kontrakt if key in item]
+            matches = [key for key in key_words_kontrakt if key in item]
             matches = tłumacz_i_filtruj(matches)
             for match in matches:
                 sql = "INSERT INTO daily_kontrakt (id, kontrakt) VALUES (%s,%s)"
@@ -92,6 +96,7 @@ def insert_data(data_list,start_id_offer):
                 mydb.commit()
         # insert into specjalizacje table
         lista_specjalizacja = data_row[8].split(",")
+        lista_specjalizacja = [item.strip() for item in lista_specjalizacja]
         for item in lista_specjalizacja:
             sql = "INSERT INTO daily_specjalizacje (id, specjalizacja) VALUES (%s,%s)"
             values = (id_offer, item)
@@ -100,18 +105,18 @@ def insert_data(data_list,start_id_offer):
         # insert into technologie_wymagane table
         for item in data_row[9]:
             sql = "INSERT INTO daily_technologie_wymagane (id, technologia) VALUES (%s,%s)"
-            values = (id_offer, item)
+            values = (id_offer, item.strip())
             connection.execute(sql, values)
             mydb.commit()
         # insert into technologie_mile_widziane table
         for item in data_row[10]:
             sql = "INSERT INTO daily_technologie_mile_widziane (id, technologia) VALUES (%s,%s)"
-            values = (id_offer, item)
+            values = (id_offer, item.strip())
             connection.execute(sql, values)
             mydb.commit()
         id_offer += 1
     mydb.commit()
-    print("data succesfuly inserted")
+    #print("data succesfuly inserted")
     connection.close()
     return id_offer
 

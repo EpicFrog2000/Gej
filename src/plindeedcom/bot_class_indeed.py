@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import re
 
 def extract_numeric_value(text):
     # Remove any non-numeric characters and spaces from the text
@@ -35,7 +36,7 @@ class Bot:
         url = 'https://pl.indeed.com/q-it-oferty-pracy.html?l=Polska'
         self.bot.get(url)
         self.bot.maximize_window()
-        self.data = ["0"] * 22
+        self.data = ["0"] * 18
 
     def get_data(self):
         #tryb
@@ -55,25 +56,16 @@ class Bot:
         trybButton.click()
         ul_element = self.bot.find_element(By.ID, "filter-salary-estimate-menu")
         li_elements = ul_element.find_elements(By.TAG_NAME, "li")
+        wynagrodzenie = []
         for li in li_elements:
             a_element = li.find_element(By.TAG_NAME, "a")
             inner_html = a_element.get_attribute("innerHTML")
             
-            if "1&nbsp;666,67" in inner_html:
-                parts = inner_html.split(".")
-                self.data[2] = extract_numeric_value(parts[1])
-            elif "5&nbsp;000,00" in inner_html:
-                parts = inner_html.split(".")
-                self.data[3] = extract_numeric_value(parts[1])
-            elif "6&nbsp;666,67" in inner_html:
-                parts = inner_html.split(".")
-                self.data[4] = extract_numeric_value(parts[1])  
-            elif "10&nbsp;833,33" in inner_html:
-                parts = inner_html.split(".")
-                self.data[5] = extract_numeric_value(parts[1])  
-            elif "20&nbsp;833,33" in inner_html:
-                parts = inner_html.split(".")
-                self.data[6] = extract_numeric_value(parts[1])    
+            parts = inner_html.split(".")
+            kwota = re.sub(r'\D', '', parts[0])
+            ilosc = re.sub(r'\D', '', parts[1])
+            wynagrodzenie.append([kwota, ilosc])
+        self.data[2] = wynagrodzenie
         #wymiar pracy
         trybButton = self.bot.find_element(By.ID, 'filter-jobtype')
         trybButton.click()
@@ -84,25 +76,25 @@ class Bot:
             inner_html = a_element.get_attribute("innerHTML")
             if "Pełny etat" in inner_html:
                 parts = inner_html.split("(")
-                self.data[7] = extract_numeric_value(parts[1])
+                self.data[3] = extract_numeric_value(parts[1])
             elif "Stała" in inner_html:
                 parts = inner_html.split("(")
-                self.data[8] = extract_numeric_value(parts[1])
+                self.data[4] = extract_numeric_value(parts[1])
             elif "Podwykonawstwo" in inner_html:
                 parts = inner_html.split("(")
-                self.data[9] = extract_numeric_value(parts[1])  
+                self.data[5] = extract_numeric_value(parts[1])  
             elif "Staż/Praktyka" in inner_html:
                 parts = inner_html.split("(")
-                self.data[10] = extract_numeric_value(parts[1])  
+                self.data[6] = extract_numeric_value(parts[1])  
             elif "Tymczasowa" in inner_html:
                 parts = inner_html.split("(")
-                self.data[11] = extract_numeric_value(parts[1])
+                self.data[7] = extract_numeric_value(parts[1])
             elif "Część etatu" in inner_html:
                 parts = inner_html.split("(")
-                self.data[12] = extract_numeric_value(parts[1])
+                self.data[8] = extract_numeric_value(parts[1])
             elif "Wolontariat" in inner_html:
                 parts = inner_html.split("(")
-                self.data[13] = extract_numeric_value(parts[1]) 
+                self.data[9] = extract_numeric_value(parts[1]) 
         #wykrztałcenie
         trybButton = self.bot.find_element(By.ID, 'filter-taxo1')
         trybButton.click()
@@ -111,30 +103,30 @@ class Bot:
         for li in li_elements:
             a_element = li.find_element(By.TAG_NAME, "a")
             inner_html = a_element.get_attribute("innerHTML")
-            if "Licencjat" in inner_html:
+            if "Średnie techniczne/branżowe" in inner_html:
                 parts = inner_html.split("(")
-                self.data[14] = extract_numeric_value(parts[1])
+                self.data[10] = extract_numeric_value(parts[1])
             elif "Magister" in inner_html:
                 parts = inner_html.split("(")
-                self.data[15] = extract_numeric_value(parts[1])
+                self.data[11] = extract_numeric_value(parts[1])
             elif "Inżynier" in inner_html:
                 parts = inner_html.split("(")
-                self.data[16] = extract_numeric_value(parts[1])  
+                self.data[12] = extract_numeric_value(parts[1])  
             elif "Średnie" in inner_html:
                 parts = inner_html.split("(")
-                self.data[17] = extract_numeric_value(parts[1])  
-            elif "Średnie techniczne/branżowe" in inner_html:
+                self.data[13] = extract_numeric_value(parts[1])  
+            elif  "Licencjat" in inner_html:
                 parts = inner_html.split("(")
-                self.data[18] = extract_numeric_value(parts[1])
+                self.data[14] = extract_numeric_value(parts[1])
             elif "Doktor" in inner_html:
                 parts = inner_html.split("(")
-                self.data[19] = extract_numeric_value(parts[1])
+                self.data[15] = extract_numeric_value(parts[1])
             elif "Zasadnicze zawodowe/branżowe" in inner_html:
                 parts = inner_html.split("(")
-                self.data[20] = extract_numeric_value(parts[1])
+                self.data[16] = extract_numeric_value(parts[1])
             elif "Podstawowe" in inner_html:
                 parts = inner_html.split("(")
-                self.data[21] = extract_numeric_value(parts[1])
+                self.data[17] = extract_numeric_value(parts[1])
         #Lokalizacja
         trybButton = self.bot.find_element(By.ID, 'filter-loc')
         trybButton.click()
@@ -193,8 +185,5 @@ class Bot:
         span = count_element.find_element(By.TAG_NAME, 'span')
         span_innerhtml = span.get_attribute("innerHTML")
         self.data.append(extract_numeric_value(span_innerhtml))
-        
-        #for data in self.data:
-        #    print(data)
         
         # add management lvl someday

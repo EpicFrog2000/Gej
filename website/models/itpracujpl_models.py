@@ -11,6 +11,13 @@ mydb = mysql.connector.connect(
 class itpracujpl_db_interaction:
     connection = mydb.cursor()
     @staticmethod
+    def last_date(connection=connection):
+        sql = "SELECT MAX(date) FROM daily_data;"
+        connection.execute(sql)
+        result = connection.fetchone()[0]
+        return result
+    
+    @staticmethod
     def count_all(connection=connection):
         sql = "SELECT COUNT(*) FROM daily_data;"
         connection.execute(sql)
@@ -106,10 +113,7 @@ class itpracujpl_db_interaction:
     @staticmethod
     def count_specjalizacje_data(connection=connection):
         sql = (
-            "SELECT specjalizacja, COUNT(specjalizacja) AS count FROM daily_specjalizacje "
-            "WHERE specjalizacja IS NOT NULL AND specjalizacja != '' "
-            "GROUP BY specjalizacja "
-            f"ORDER BY count DESC LIMIT 20;"
+            "SELECT TRIM(specjalizacja) AS specjalizacja, COUNT(TRIM(specjalizacja)) AS count FROM daily_specjalizacje WHERE TRIM(specjalizacja) IS NOT NULL AND TRIM(specjalizacja) != '' GROUP BY TRIM(specjalizacja) ORDER BY count DESC LIMIT 20;"
         )
         connection.execute(sql)
         specjalizacje_records = connection.fetchall()
@@ -119,9 +123,9 @@ class itpracujpl_db_interaction:
     @staticmethod
     def count_technologie_mile_widziane_data(connection=connection):
         sql = (
-            "SELECT technologia, COUNT(technologia) AS count FROM daily_technologie_mile_widziane "
-            "WHERE technologia IS NOT NULL AND technologia != '' "
-            f"GROUP BY technologia ORDER BY count DESC LIMIT 20;"
+            "SELECT TRIM(technologia)as technologia, COUNT(TRIM(technologia)) AS count FROM daily_technologie_mile_widziane "
+            "WHERE TRIM(technologia) IS NOT NULL AND TRIM(technologia) != '' "
+            f"GROUP BY TRIM(technologia) ORDER BY count DESC LIMIT 20;"
         )
         connection.execute(sql)
         technologie_mile_widziane_records = connection.fetchall()
@@ -133,9 +137,9 @@ class itpracujpl_db_interaction:
     @staticmethod
     def count_technologie_wymagane_data(connection=connection):
         sql = (
-            "SELECT technologia, COUNT(technologia) AS count FROM daily_technologie_wymagane "
-            "WHERE technologia IS NOT NULL AND technologia != '' "
-            f"GROUP BY technologia ORDER BY count DESC LIMIT 20;"
+            "SELECT TRIM(technologia) as technologia, COUNT(TRIM(technologia)) AS count FROM daily_technologie_wymagane "
+            "WHERE TRIM(technologia) IS NOT NULL AND TRIM(technologia) != '' "
+            f"GROUP BY TRIM(technologia) ORDER BY count DESC LIMIT 20;"
         )
         connection.execute(sql)
         technologie_wymagane_records = connection.fetchall()

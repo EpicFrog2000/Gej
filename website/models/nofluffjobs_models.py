@@ -10,6 +10,12 @@ mydb = mysql.connector.connect(
 class nofluffjobs_db_interaction:
     connection = mydb.cursor()
     @staticmethod
+    def last_date(connection = connection):
+        sql = "SELECT MAX(date) FROM daily_data;"
+        connection.execute(sql)
+        count = connection.fetchone()[0]
+        return count
+    @staticmethod
     def count_all(connection = connection):
         sql = "SELECT COUNT(*) FROM daily_data;"
         connection.execute(sql)

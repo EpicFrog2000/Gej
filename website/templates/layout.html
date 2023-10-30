@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -18,9 +18,6 @@
         <a href="{{ url_for('render_glowna')}}" class="menu_elem"><i class="ion-home"></i> Główna</a>
         {% if title == "Strona Główna" %}<a style="color: yellow; float: right;">Here!</a>{% endif %}
         <hr>
-        <a href="{{ url_for('display_other_projects')}}" class="menu_elem"><i class="ion-folder"></i> Inne Projekty</a>
-        {% if title == "Strona Projekty" %}<a style="color: yellow; float: right;">Here!</a>{% endif %}
-        <hr>
         <a class="menu_elem"><i class="ion-android-settings"></i> Dane ze stronek</a>
         <ul id="data-sources" class="open">
             <li><a href="{{ url_for('render_itpracujpl')}}" class="menu_elem">Dane z it.pracuj.pl</a>
@@ -31,6 +28,9 @@
             {% if title == "Dane z nofluffjobs" %}<a style="color: yellow; float: right;">Here!</a>{% endif %}</li>
         </ul>
         <hr>
+        <!--<a href="{{ url_for('display_other_projects')}}" class="menu_elem"><i class="ion-folder"></i> Inne Projekty</a>-->
+        {% if title == "Strona Projekty" %}<!--<a style="color: yellow; float: right;">Here!</a>-->{% endif %}
+        <!--<hr>-->
         <a href="{{ url_for('render_about')}}" class="menu_elem"><i class="ion-ios-information"></i> About</a>
         {% if title == "Strona About" %}<a style="color: yellow; float: right;">Here!</a>{% endif %}
         <hr>
@@ -39,7 +39,6 @@
         <hr>
     </div>
     <div class="lower_menu">
-        <h2 style="text-align: center;">Aktualne typy danych z tej strony</h2>
         {% block lower_menu %}{% endblock %}
     </div>
 </div>

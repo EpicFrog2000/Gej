@@ -9,6 +9,12 @@ mydb = mysql.connector.connect(
 class indeed_db_interaction:
     connection = mydb.cursor()
     @staticmethod
+    def last_date(connection=connection):
+        sql = "SELECT MAX(date) FROM menu_data;"
+        connection.execute(sql)
+        result = connection.fetchone()[0]
+        return result
+    @staticmethod
     def count_all(connection=connection):
         sql = "SELECT ilosc FROM menu_data ORDER BY date DESC LIMIT 1;"
         connection.execute(sql)
@@ -17,16 +23,13 @@ class indeed_db_interaction:
 
     @staticmethod
     def wynagrodzenie_data(connection=connection):
-        sql = "SELECT `wynagrodzenie_1666,67`, `wynagrodzenie_5000,00`, `wynagrodzenie_6666,67`, `wynagrodzenie_10833,33`, `wynagrodzenie_20833,33` FROM menu_data ORDER BY date DESC LIMIT 1;"
+        sql = "SELECT nazwa, ilosc FROM wynagrodzenie_data WHERE date = (SELECT MAX(date) FROM wynagrodzenie_data);;"
         connection.execute(sql)
-        result = connection.fetchone()
-        wynagrodzenie_data = {
-            "1666,67": result[0],
-            "5000,00": result[1],
-            "6666,67": result[2],
-            "10833,33": result[3],
-            "20833,33": result[4]
-        }
+        result = connection.fetchall()
+        wynagrodzenie_data = [{
+            "nazwa": f"{int(row[0]) // 100}.{int(row[0]) % 100:02} pln",
+            "ilosc": row[1],
+        } for row in result]
         return wynagrodzenie_data
     
     @staticmethod
@@ -34,11 +37,11 @@ class indeed_db_interaction:
         sql = "SELECT english, polish FROM menu_data ORDER BY date DESC LIMIT 1;"
         connection.execute(sql)
         result = connection.fetchone()
-        wynagrodzenie_data = {
+        jezyk_data = {
             "english": result[0],
             "polish": result[1],
         }
-        return wynagrodzenie_data
+        return jezyk_data
     
     @staticmethod
     def tryb_data(connection=connection):
@@ -117,16 +120,13 @@ class indeed_db_interaction:
     
     @staticmethod
     def get_historic_salary_data(connection=connection):
-        sql = "SELECT  `wynagrodzenie_1666,67`, `wynagrodzenie_5000,00`, `wynagrodzenie_6666,67`, `wynagrodzenie_10833,33`, `wynagrodzenie_20833,33`, `date` FROM menu_data ORDER BY date ASC;"
+        sql = "SELECT nazwa, ilosc, `date` FROM wynagrodzenie_data ORDER BY date ASC;"
         connection.execute(sql)
         result = connection.fetchall()
         wynagrodzenie_data = [{
-            "1666,67": entry[0],
-            "5000,00": entry[1],
-            "6666,67": entry[2],
-            "10833,33": entry[3],
-            "20833,33": entry[4],
-            "date": entry[5].strftime("%Y-%m-%d"),
+            "nazwa": f"{int(entry[0]) // 100}.{int(entry[0]) % 100:02} pln",
+            "ilosc": entry[1],
+            "date": entry[2].strftime("%Y-%m-%d"),
         }for entry in result]
         return wynagrodzenie_data
     

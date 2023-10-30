@@ -30,7 +30,7 @@ def extract_number(input_string):
 
 class Bot:
     def __init__(self):
-        #print("\rInitiation", end="")
+        ##print("\rInitiation", end="")
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
@@ -66,16 +66,16 @@ class Bot:
         self.bot.wszystkie_dane_ofert = []
         
     def kliknij_przycisk_ciasteczka(self):
-        #print("\rClicking cookies button", end="")
+        ##print("\rClicking cookies button", end="")
         try:
             button = WebDriverWait(self.bot, 10).until(EC.presence_of_element_located((By.ID, "onetrust-accept-btn-handler")))
             button.click()
         except:
-            #print("Error occurred while clicking cookies button")
+            ##print("Error occurred while clicking cookies button")
             pass
     
     def get_all_sites_nums(self):
-        #print("\rGetting nums of all sites", end="")
+        ##print("\rGetting nums of all sites", end="")
         try:
             ul_element = self.bot.find_element(By.CSS_SELECTOR, 'ul.pagination')
             li_elements = ul_element.find_elements(By.TAG_NAME, 'li')
@@ -84,12 +84,12 @@ class Bot:
             numer_stron_sesji = link_element.get_attribute("innerHTML")
             return int(numer_stron_sesji)
         except:
-            #print("\rError getting number of all sites", end="")
+            ##print("\rError getting number of all sites", end="")
             pass
 
     def get_linki_from_current_site(self):
         self.dane_z_ofert_stron = []
-        #print("\rGet_linki_from_current_site", end="")
+        ##print("\rGet_linki_from_current_site", end="")
         try:
             self.linki_do_oferty.clear()
             all_div = self.bot.find_element(By.CLASS_NAME, "list-container.ng-star-inserted")
@@ -97,55 +97,55 @@ class Bot:
             for offer in all_offers:
                 self.linki_do_oferty.append(offer.get_attribute("href"))
         except:
-            #print("\r Error get_linki_from_current_site", end="")
+            ##print("\r Error get_linki_from_current_site", end="")
             pass
             
     
     def get_data_from_offers(self):
         iterator = 1
         count = len(self.linki_do_oferty)
-        #print("r\get_data_from_offers", end="")
+        ##print("r\get_data_from_offers", end="")
         self.tymczasowe_dane_jednej_oferty = [""] * 8
         for link_do_oferty in self.linki_do_oferty:
-            print('\r' + ' ' * 150 + '\r', end='', flush=True)
+            #print('\r' + ' ' * 150 + '\r', end='', flush=True)
             msg = f"\r" + "Obecnie zbiera dane z:" + str(iterator) + " / " + str(count) + " " + str(link_do_oferty)
-            print(msg, end ="", flush=True)
+            #print(msg, end ="", flush=True)
             iterator +=1
             try:
-                #print("r\going to offer site", link_do_oferty, end="")
+                ##print("r\going to offer site", link_do_oferty, end="")
                 self.bot.get(link_do_oferty)
             except:
                 continue
             # company
             try:
-                #print("r\getting title", end="")
+                ##print("r\getting title", end="")
                 company_div = self.bot.find_element(By.ID, "postingCompanyUrl")
                 company_pre_format = company_div.get_attribute("innerHTML")
                 company = company_pre_format.split("<")
                 if len(company) > 1:
-                    self.tymczasowe_dane_jednej_oferty[0] = company[0]
+                    self.tymczasowe_dane_jednej_oferty[0] = company[0].strip()
                 else:
-                    self.tymczasowe_dane_jednej_oferty[0] = company_pre_format
+                    self.tymczasowe_dane_jednej_oferty[0] = company_pre_format.strip()
             except:
                 pass
             # category
             try:
-                #print("r\getting category", end="")
+                ##print("r\getting category", end="")
                 category_div = self.bot.find_element(By.CSS_SELECTOR, 'a[data-cy="JobOffer_Category"]')
-                self.tymczasowe_dane_jednej_oferty[1] = category_div.get_attribute("innerHTML")
+                self.tymczasowe_dane_jednej_oferty[1] = category_div.get_attribute("innerHTML").strip()
             except:
                 pass
             # seniority
             try:
-                #print("r\getting seniority", end="")
+                ##print("r\getting seniority", end="")
                 div = self.bot.find_element(By.ID, "posting-seniority")
                 lvl_span = div.find_element(By.TAG_NAME, "span")
-                self.tymczasowe_dane_jednej_oferty[2] = lvl_span.get_attribute("innerHTML")
+                self.tymczasowe_dane_jednej_oferty[2] = lvl_span.get_attribute("innerHTML").strip()
             except:
                 pass
             # must have
             try:
-                #print("r\getting must have", end="")
+                ##print("r\getting must have", end="")
                 temp_wymagania = []
                 element = self.bot.find_element(By.XPATH, '//section[@branch="musts" and @class="d-block"]')
                 ul = element.find_element(By.TAG_NAME, "ul")
@@ -162,7 +162,7 @@ class Bot:
                 pass
             #Nice to have
             try:
-                #print("r\getting Nice to have", end="")
+                ##print("r\getting Nice to have", end="")
                 temp_wymagania = []
                 element = self.bot.find_element(By.XPATH, '//section[@branch="nices" and @class="d-block mt-3 ng-star-inserted"]')
                 ul = element.find_element(By.TAG_NAME, "ul")
@@ -180,7 +180,7 @@ class Bot:
             #Got tired, ide spać zzz...
             #salary
             try:
-                #print("r\getting salary", end="")
+                ##print("r\getting salary", end="")
                 elem = self.bot.find_element(By.CLASS_NAME, "salary.ng-star-inserted")
                 salary_elem = elem.find_element(By.TAG_NAME, "h4")
                 parts = salary_elem.get_attribute("innerHTML").split("–")
@@ -192,7 +192,7 @@ class Bot:
                 pass
             # lokacje
             try:
-                #print("r\getting lokacje", end="")
+                ##print("r\getting lokacje", end="")
                 temp_locations = []
                 ul = self.bot.find_element(By.CLASS_NAME, "locations-compact")
                 li_elements = ul.find_elements(By.TAG_NAME, "li")
@@ -208,7 +208,7 @@ class Bot:
             self.bot.wszystkie_dane_ofert.append(self.tymczasowe_dane_jednej_oferty.copy())
             # experience
             try:
-                #print("r\getting experience", end="")
+                ##print("r\getting experience", end="")
                 found = False 
                 element = self.bot.find_element(By.CLASS_NAME, "d-block.border-top.ng-star-inserted")
                 inner_elem = element.find_element(By.CLASS_NAME, "p-20")
@@ -244,18 +244,18 @@ class Bot:
                 self.tymczasowe_dane_jednej_oferty[7] = ""
                 pass
             self.dane_z_ofert_stron.append(self.tymczasowe_dane_jednej_oferty.copy())
-            ##print("dane_z_ofert_stron: ",self.dane_z_ofert_stron)# company
+            ###print("dane_z_ofert_stron: ",self.dane_z_ofert_stron)# company
             #input("")
-            ##print("company: ", self.tymczasowe_dane_jednej_oferty[0])# company
-            ##print("category: ", self.tymczasowe_dane_jednej_oferty[1])# category
-            ##print("seniority: ", self.tymczasowe_dane_jednej_oferty[2])# seniority
-            ##print("must have: ", self.tymczasowe_dane_jednej_oferty[3])# must have
-            ##print("Nice to have: ", self.tymczasowe_dane_jednej_oferty[4])# Nice to have
-            ##print("salary: ", self.tymczasowe_dane_jednej_oferty[5])# salary
-            ##print("lokacje: ", self.tymczasowe_dane_jednej_oferty[6])# lokacje
-            ##print("doswiadczenie: ", self.tymczasowe_dane_jednej_oferty[7])# doswiadczenie
+            ###print("company: ", self.tymczasowe_dane_jednej_oferty[0])# company
+            ###print("category: ", self.tymczasowe_dane_jednej_oferty[1])# category
+            ###print("seniority: ", self.tymczasowe_dane_jednej_oferty[2])# seniority
+            ###print("must have: ", self.tymczasowe_dane_jednej_oferty[3])# must have
+            ###print("Nice to have: ", self.tymczasowe_dane_jednej_oferty[4])# Nice to have
+            ###print("salary: ", self.tymczasowe_dane_jednej_oferty[5])# salary
+            ###print("lokacje: ", self.tymczasowe_dane_jednej_oferty[6])# lokacje
+            ###print("doswiadczenie: ", self.tymczasowe_dane_jednej_oferty[7])# doswiadczenie
     def go_next_site(self):
-        #print("r\going to next sites", end="")
+        ##print("r\going to next sites", end="")
         self.obecna_strona += 1
         url = 'https://nofluffjobs.com/?criteria=country%3Dpolska&page=' + str(self.obecna_strona)
         self.bot.get(url)

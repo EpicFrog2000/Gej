@@ -16,51 +16,6 @@ var chart = new Chart(ctx, {
   options: {}
 });
 
-var ctx2 = document.getElementById('historic_salary_chart').getContext('2d');
-var chartData2 = {
-  labels: chartData2.map(function (entry) { return entry["date"]; }),
-  datasets: [{
-    label: "1666,67 pln",
-    data: chartData2.map(function (entry) { return entry["1666,67"]; }),
-    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-    borderColor: 'rgba(75, 192, 192, 1)',
-    borderWidth: 1
-},
-{
-  label: '5000,00 pln',
-  data: chartData2.map(function (entry) { return entry["5000,00"]; }),
-  backgroundColor: 'rgba(192, 75, 75, 0.2)',
-  borderColor: 'rgba(192, 75, 75, 1)',
-  borderWidth: 1
-},
-{
-  label: '6666,67 pln',
-  data: chartData2.map(function (entry) { return entry["6666,67"]; }),
-  backgroundColor: 'rgba(75, 192, 75, 0.2)',
-  borderColor: 'rgba(75, 192, 75, 1)',
-  borderWidth: 1
-},
-{
-  label: '10833,33 pln',
-  data: chartData2.map(function (entry) { return entry["10833,33"]; }),
-  backgroundColor: 'rgba(192, 192, 75, 0.2)',
-  borderColor: 'rgba(192, 192, 75, 1)',
-  borderWidth: 1
-},
-{
-  label: '20833,33 pln',
-  data: chartData2.map(function (entry) { return entry["20833,33"]; }),
-  backgroundColor: 'rgba(75, 75, 192, 0.2)',
-  borderColor: 'rgba(75, 75, 192, 1)',
-  borderWidth: 1
-}]
-};
-var historic_wynagrodzenie_chart = new Chart(ctx2, {
-  type: 'line',
-  data: chartData2,
-  options: {}
-});
-
 var ctx = document.getElementById('historic_jezyki_chart').getContext('2d');
 var chartData3 = {
   labels: chartData3.map(function (entry) { return entry["date"]; }),
@@ -276,6 +231,32 @@ uniqueRanges.forEach(range => {
   });
 });
 var ctx = document.getElementById("historic_lokalizacja_chart").getContext("2d");
+var myChart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: uniqueDates,
+    datasets: dataSets,    
+  },
+});
+
+
+var uniqueDates = [...new Set(chartData2.map(item => item['date']))];
+var uniqueRanges = [...new Set(chartData2.map(item => item['nazwa']))];
+var dataSets = [];
+uniqueRanges.forEach(range => {
+  var rangeData = uniqueDates.map(date => {
+    var dataItem = chartData2.find(item => item['date'] === date && item['nazwa'] === range);
+    return dataItem ? dataItem['ilosc'] : 0;
+  });
+  dataSets.push({
+    label: range,
+    data: rangeData,
+    backgroundColor: getRandomColor(0.2),
+    borderColor: getRandomColor(1),
+    borderWidth: 1,
+  });
+});
+var ctx = document.getElementById("historic_salary_chart").getContext("2d");
 var myChart = new Chart(ctx, {
   type: "line",
   data: {
